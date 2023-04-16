@@ -11,7 +11,8 @@ import {
   TimesheetScreen, 
   EmployeeList, 
   StatisticScreen, 
-  Settings
+  Settings,
+  ManageDevice
 } from '../screens'
 import CustomDrawer from '../components/CustomDrawer'
 import { theme } from '../core/theme'
@@ -37,6 +38,7 @@ export default function DrawerNavigator() {
       <Drawer.Screen name="Danh sách nhân viên" component={EmployeeList} />
       <Drawer.Screen name="Biểu đồ thống kê" component={StatisticScreen} />
       <Drawer.Screen name="Cài đặt" component={Settings} />
+      <Drawer.Screen name="Quản lý thiết bị" component={ManageDevice} />
     </Drawer.Navigator>
   )
 }

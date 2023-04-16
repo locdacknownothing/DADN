@@ -4,6 +4,7 @@ import {
   LoginScreen,
   RegisterScreen,
   ResetPasswordScreen,
+  ManageDevice
 } from '../screens'
 import DrawerNavigator from './DrawerNavigator';
 
@@ -25,6 +26,10 @@ export default function AuthStackNavigator() {
       />
       <Stack.Screen
         name={"ProfileScreen"}
+        component={DrawerNavigator}
+      />
+      <Stack.Screen
+        name={"ManageDevice"}
         component={DrawerNavigator}
       />
     </Stack.Navigator>
