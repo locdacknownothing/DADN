@@ -10,10 +10,16 @@ export default function Settings() {
   return (
     <View style={{backgroundColor: "#fff"}}>
       <View style={styles.container}>
-        <View style={styles.avatarContainer}>
-          <Avatar rounded title="MD" size={70} containerStyle={{backgroundColor: '#F64561', marginTop: 10}}/>
+        <View style={styles.basicInfo}>
+          <View style={styles.avatarContainer}>
+            <Avatar rounded size={70} containerStyle={{backgroundColor: '#F64561', marginTop: 10}}
+            source={{
+              uri:
+                'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Cat03.jpg/481px-Cat03.jpg',
+            }}/>
+          </View>
           <Text style={styles.name}>
-            Name
+            Trương Nguyễn Khôi Nguyên
           </Text>
           <Text  style={styles.role}>
             Employee
@@ -64,10 +70,19 @@ export default function Settings() {
 
 const styles = StyleSheet.create({
   container: {backgroundColor: '#C4DAF5', height:'100%', borderTopLeftRadius: 50, borderTopRightRadius: 50},
-  avatarContainer: {backgroundColor: "#FDEDEB", height: 90, width: 90, alignSelf: 'center', borderRadius: 100, marginTop: 20, marginBottom: 10, alignItems: 'center'},
-  name: {marginTop: 10, fontSize: 24},
-  role: {color: '#DF3222', fontSize: 16},
-  body: {backgroundColor: '#d9d9d9', position: 'absolute', bottom: 0, height: "75%", width: '100%'},
+  avatarContainer: {backgroundColor: "#FDEDEB", height: 90, width: 90, alignSelf: 'center', borderRadius: 100, marginTop: 15, alignItems: 'center',
+                    shadowColor: "#000",
+                    shadowOffset: {
+                      width: 0,
+                      height: 4,
+                    },
+                    shadowOpacity: 0.32,
+                    shadowRadius: 5.46,
+                    
+                    elevation: 9,},
+  name: {fontSize: 24, textAlign: 'center', fontWeight: '600'},
+  role: {color: '#DF3222', fontSize: 20, fontWeight: '500'},
+  body: {backgroundColor: '#d9d9d9', position: 'absolute', bottom: 0, height: "70%", width: '100%'},
   option: {flexDirection: 'row', width: '100%', backgroundColor: "#fff", height: 50, marginBottom: 2},
-  
+  basicInfo: {width: 200, alignItems: 'center', alignSelf: 'center'}
 })
