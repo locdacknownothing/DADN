@@ -4,8 +4,69 @@ import Header from '../../components/Header'
 import { StyleSheet, View, Text, Switch } from 'react-native'
 import { Avatar, Icon } from 'react-native-elements'
 import { Button } from 'react-native-paper'
+import { useState, useEffect } from 'react'
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler'
+
+const temp_url = "https://io.adafruit.com/api/v2/Vyvy0812/feeds/pasic-smart-office.temperature";
+const humi_url = "https://io.adafruit.com/api/v2/Vyvy0812/feeds/pasic-smart-office.humidity";
+const brightness_url = "https://io.adafruit.com/api/v2/Vyvy0812/feeds/pasic-smart-office.brightness";
+const noise_url = "https://io.adafruit.com/api/v2/Vyvy0812/feeds/pasic-smart-office.noise";
+const light_url = "https://io.adafruit.com/api/v2/Vyvy0812/feeds/pasic-smart-office.offices-light";
+const hallways_light_url = "https://io.adafruit.com/api/v2/Vyvy0812/feeds/pasic-smart-office.hallways-light";
+const fan_url = "https://io.adafruit.com/api/v2/Vyvy0812/feeds/pasic-smart-office.fan";
+
+let TIMEOUT_MS = 5000;
 
 export default function HomeScreen() {
+  const [tempValue, setTempValue] = useState(0);
+  const [humiValue, setHumiValue] = useState(0);
+  const [brightValue, setBrightValue] = useState(0);
+  const [noiseValue, setNoiseValue] = useState(0);
+  const [lightValue, setLightValue] = useState(0);
+  const [hallwaysLightValue, setHallwaysLightValue] = useState(0);
+  const [fanValue, setFanValue] = useState(0);
+
+  useEffect(() => {
+    setInterval(() => {
+      Promise.all([
+        fetch(temp_url),
+        fetch(humi_url),
+        fetch(brightness_url),
+        fetch(noise_url),
+        // fetch(light_url),
+        // fetch(hallways_light_url),
+        // fetch(fan_url)
+      ])
+      .then(([res1, 
+        res2, 
+        res3, 
+        res4, 
+        // res5, 
+        // res6, 
+        // res7
+      ]) =>
+        Promise.all([res1.json(), 
+          res2.json(), 
+          res3.json(), 
+          res4.json(), 
+          // res5.json(), 
+          // res6.json(), 
+          // res7.json()
+        ])
+      )
+      .then(([data1, data2, data3, data4, data5, data6, data7]) => {
+        setTempValue(data1.last_value);
+        setHumiValue(data2.last_value);
+        setBrightValue(data3.last_value);
+        setNoiseValue(data4.last_value);
+        // setLightValue(data5.last_value);
+        // setHallwaysLightValue(data6.last_value);
+        // setFanValue(data7.last_value);
+        console.log("UPDATE");
+      })
+    }, 20000)
+  })
+
   return (
     <View style={{backgroundColor: "#fff"}}>
       <View style={styles.container}>
@@ -32,7 +93,7 @@ export default function HomeScreen() {
                 <Icon name="thermometer" type='feather' size={25} containerStyle={{marginTop: 7}}/>
               </View>
               <Text style={{fontWeight: 'bold', fontSize: 18}}>Nhiệt độ</Text>
-              <Text>27 độ</Text>
+              <Text>{tempValue}°C</Text>
             </View>
             
             <View style={styles.statusElement}>
@@ -40,7 +101,7 @@ export default function HomeScreen() {
                 <Icon name="droplet" type='feather' size={25} containerStyle={{marginTop: 7}}/>
               </View>
               <Text style={{fontWeight: 'bold', fontSize: 18}}>Độ ẩm</Text>
-              <Text>50%</Text>
+              <Text>{humiValue}%</Text>
             </View>
             
             <View style={styles.statusElement}>
@@ -48,7 +109,7 @@ export default function HomeScreen() {
                 <Icon name="bulb" type='ionicon' size={25} containerStyle={{marginTop: 7}}/>
               </View>
               <Text style={{fontWeight: 'bold', fontSize: 18}}>Ánh sáng</Text>
-              <Text>400 lux</Text>
+              <Text>{brightValue} lux</Text>
             </View>
             
             <View style={styles.statusElement}>
@@ -56,7 +117,7 @@ export default function HomeScreen() {
                 <Icon name="barcode" type='ionicon' size={25} containerStyle={{marginTop: 7}}/>
               </View>
               <Text style={{fontWeight: 'bold', fontSize: 18}} >Tiếng ồn</Text>
-              <Text>50db</Text>
+              <Text>{noiseValue}db</Text>
             </View>
           </View>
 
