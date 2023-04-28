@@ -5,6 +5,8 @@ import {
   Image,
   View,
   Dimensions,
+  TouchableOpacity,
+  Text
 } from 'react-native';
 import {
   DrawerContentScrollView,
@@ -14,17 +16,33 @@ import {
 const {width} = Dimensions.get('screen');
 
 const CustomDrawer = props => {
+  const { navigation } = props;
+
+  const handleLogout = () => {
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'StartScreen' }],
+    })
+  };
+
   return (
-    <DrawerContentScrollView {...props}>
-      <ImageBackground source={'../assets/background_dot.png'} style={{height: 140}}>
-        <Image source={'../assets/logo.png'} style={styles.userImg} />
-      </ImageBackground>
-      <View style={styles.drawerListWrapper}>
-        <DrawerItemList {...props} />
-      </View>
-    </DrawerContentScrollView>
+    <View style={styles.container}>
+      <DrawerContentScrollView {...props}>
+        {/* <ImageBackground source={'../assets/background_dot.png'} style={{height: 140}}>
+          <Image source={'../assets/logo.png'} style={styles.userImg} />
+        </ImageBackground> */}
+        <View style={styles.drawerListWrapper}>
+          <DrawerItemList {...props} />
+        </View>
+      </DrawerContentScrollView>
+      <TouchableOpacity onPress={handleLogout}>
+        <Text style={styles.logoutButtonText}>Đăng xuất</Text>
+      </TouchableOpacity>
+    </View>
   );
 };
+
+
 
 export default CustomDrawer;
 
@@ -39,7 +57,13 @@ const styles = StyleSheet.create({
     borderWidth: 4,
     borderColor: 'white',
   },
-  drawerListWrapper: {
-    marginTop: 65,
+  container: {
+    flex: 1,
+  },
+  logoutButtonText: {
+    color: 'red',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    margin: 20
   },
 });

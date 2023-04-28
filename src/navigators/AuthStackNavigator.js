@@ -1,10 +1,11 @@
+import React from 'react';
+import { View, Text, Button } from 'react-native';
 import { createStackNavigator } from "@react-navigation/stack"
 import {
   StartScreen,
   LoginScreen,
   RegisterScreen,
   ResetPasswordScreen,
-  ManageDevice
 } from '../screens'
 import DrawerNavigator from './DrawerNavigator';
 
@@ -16,22 +17,35 @@ export default function AuthStackNavigator() {
       <Stack.Screen name="StartScreen" component={StartScreen} />
       <Stack.Screen name="LoginScreen" component={LoginScreen} />
       <Stack.Screen name="RegisterScreen" component={RegisterScreen} />
-      <Stack.Screen
-        name="ResetPasswordScreen"
-        component={ResetPasswordScreen}
-      />
+      <Stack.Screen name="ResetPasswordScreen" component={ResetPasswordScreen}/>
       <Stack.Screen
         name={"HomeScreen"}
         component={DrawerNavigator}
       />
-      <Stack.Screen
+      {/* <Stack.Screen
         name={"ProfileScreen"}
         component={DrawerNavigator}
-      />
-      <Stack.Screen
-        name={"ManageDevice"}
+      /> */}
+      {/* <Stack.Screen
+        name={"Quản lý thiết bị"}
+        component={DrawerNavigator}
+      /> */}
+      {/* <Stack.Screen
+        name={"TimesheetScreen"}
         component={DrawerNavigator}
       />
+      <Stack.Screen
+        name={"EmployeeList"}
+        component={DrawerNavigator}
+      />
+      <Stack.Screen
+        name={"StatisticScreen"}
+        component={DrawerNavigator}
+      />
+      <Stack.Screen
+        name={"Settings"}
+        component={DrawerNavigator}
+      /> */}
     </Stack.Navigator>
   );
 }

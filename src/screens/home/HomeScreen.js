@@ -17,7 +17,7 @@ const fan_url = "https://io.adafruit.com/api/v2/Vyvy0812/feeds/pasic-smart-offic
 
 let TIMEOUT_MS = 5000;
 
-export default function HomeScreen() {
+export default function HomeScreen({navigation}) {
   const [tempValue, setTempValue] = useState(0);
   const [humiValue, setHumiValue] = useState(0);
   const [brightValue, setBrightValue] = useState(0);
@@ -133,7 +133,8 @@ export default function HomeScreen() {
                 Quản lý thiết bị
               </Text>
               <View>
-                <Icon name="chevron-right" type="AntDesign" color='#fff' size={30} containerStyle={{marginLeft: 120}}/>
+                <Icon name="chevron-right" type="AntDesign" color='#fff' size={30} containerStyle={{marginLeft: 120}}
+                  onPress={() => navigation.navigate('Quản lý thiết bị')}/>
               </View>
             </View>
 
@@ -146,7 +147,8 @@ export default function HomeScreen() {
                 Xem bảng chấm công
               </Text>
               <View>
-                <Icon name="chevron-right" type="AntDesign" color='#fff' size={30} containerStyle={{marginLeft: 58}}/>
+                <Icon name="chevron-right" type="AntDesign" color='#fff' size={30} containerStyle={{marginLeft: 58}}
+                  onPress={() => navigation.navigate('Bảng chấm công')}/>
               </View>
             </View>
 
@@ -160,7 +162,8 @@ export default function HomeScreen() {
                 Xem danh sách nhân viên
               </Text>
               <View>
-                <Icon name="chevron-right" type="AntDesign" color='#fff' size={30} containerStyle={{marginLeft: 25}}/>
+                <Icon name="chevron-right" type="AntDesign" color='#fff' size={30} containerStyle={{marginLeft: 25}}
+                  onPress={() => navigation.navigate('Danh sách nhân viên')}/>
               </View>
             </View>
             
@@ -172,7 +175,8 @@ export default function HomeScreen() {
                 Biểu đồ thống kê
               </Text>
               <View>
-                <Icon name="chevron-right" type="AntDesign" color='#fff' size={30} containerStyle={{marginLeft: 103}}/>
+                <Icon name="chevron-right" type="AntDesign" color='#fff' size={30} containerStyle={{marginLeft: 103}}
+                  onPress={() => navigation.navigate('Biểu đồ thống kê')}/>
               </View>
             </View>
 

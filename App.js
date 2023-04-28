@@ -4,7 +4,7 @@ import { Provider } from 'react-native-paper'
 import { NavigationContainer } from '@react-navigation/native'
 import { theme } from './src/core/theme'
 import AuthStackNavigator from './src/navigators/AuthStackNavigator'
-import DrawerNavigator from './src/navigators/DrawerNavigator'
+// import DrawerNavigator from './src/navigators/DrawerNavigator'
 
 export default function App() {
   return (
