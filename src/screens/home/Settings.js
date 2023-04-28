@@ -48,12 +48,11 @@ export default function Settings() {
             <Text style={{color: "#000", marginVertical: 12, marginLeft: 15, height: '100%', fontSize: 20}}>Chế độ tối</Text>
             <View style={{marginVertical: 2, marginLeft: 180}}>
               <Switch
-                trackColor={{false: '#767577', true: '#81b0ff'}}
-                thumbColor={useState(false) ? '#f5dd4b' : '#f4f3f4'}
-                ios_backgroundColor="#3e3e3e"
-                onValueChange={toggleSwitch}
-                value={useState(false)}
-              />
+                  trackColor={{ false: " #e6e5e6 ", true: "#66ff99" }}
+                  thumbColor={isEnabled ? "#ffffff" : "#cccccc"}
+                  onValueChange={ toggleSwitch}
+                  value={isEnabled}
+                />
             </View>
           </View>
           <View style={styles.option}>
