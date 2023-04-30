@@ -1,11 +1,10 @@
-import React from 'react'
+import React , { useState, useEffect } from 'react'
 import Background from '../../components/Background'
 import Header from '../../components/Header'
 import { StyleSheet, View, Text, Switch } from 'react-native'
 import { Avatar, Icon } from 'react-native-elements'
 import { Button } from 'react-native-paper'
-import { useState, useEffect } from 'react'
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler'
+import { theme } from '../../core/theme'
 
 const temp_url = "https://io.adafruit.com/api/v2/Vyvy0812/feeds/pasic-smart-office.temperature";
 const humi_url = "https://io.adafruit.com/api/v2/Vyvy0812/feeds/pasic-smart-office.humidity";
@@ -188,7 +187,7 @@ export default function HomeScreen({navigation}) {
 }
 
 const styles = StyleSheet.create({
-  container: {backgroundColor: '#C4DAF5', height:'100%', borderTopLeftRadius: 50, borderTopRightRadius: 50},
+  container: {backgroundColor: theme.colors.subsubprime, height:'100%', borderTopLeftRadius: 50, borderTopRightRadius: 50},
   avatarContainer: {backgroundColor: "#FDEDEB", height: 90, width: 90, alignSelf: 'center', borderRadius: 100, marginTop: 15, alignItems: 'center',
                     shadowColor: "#000",
                     shadowOffset: {
@@ -212,10 +211,10 @@ const styles = StyleSheet.create({
             shadowRadius: 5.46,
             
             elevation: 9,},
-  iconContainer: {backgroundColor: '#99CEFF', borderRadius: 20, width: 40, height: 40, alignItems: 'center', marginBottom: 5},
+  iconContainer: {backgroundColor: theme.colors.subprime, borderRadius: 20, width: 40, height: 40, alignItems: 'center', marginBottom: 5},
   statusElement: {alignItems: 'center', alignSelf: 'flex-start', marginTop: 15, marginLeft: 10, marginRight: 9},
   service: {marginLeft: 30, marginRight: 30},
-  serviceButton: {backgroundColor: '#495867', borderRadius: 10, height: 50, color: '#fff', flexDirection: 'row', paddingTop: 10, width: '100%', marginBottom: 10,
+  serviceButton: {backgroundColor: theme.colors.primary, borderRadius: 10, height: 50, color: '#fff', flexDirection: 'row', paddingTop: 10, width: '100%', marginBottom: 10,
                   shadowColor: "#000",
                   shadowOffset: {
                     width: 0,

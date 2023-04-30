@@ -3,6 +3,7 @@ import Background from '../../components/Background'
 import Header from '../../components/Header'
 import { StyleSheet, View, Text,Switch } from 'react-native'
 import { Avatar, Icon} from 'react-native-elements'
+import { theme } from '../../core/theme'
 
 export default function Settings() {
   const [isEnabled, setIsEnabled] = useState(false);
@@ -68,7 +69,7 @@ export default function Settings() {
 }
 
 const styles = StyleSheet.create({
-  container: {backgroundColor: '#C4DAF5', height:'100%', borderTopLeftRadius: 50, borderTopRightRadius: 50},
+  container: {backgroundColor: theme.colors.subsubprime, height:'100%', borderTopLeftRadius: 50, borderTopRightRadius: 50},
   avatarContainer: {backgroundColor: "#FDEDEB", height: 90, width: 90, alignSelf: 'center', borderRadius: 100, marginTop: 15, alignItems: 'center',
                     shadowColor: "#000",
                     shadowOffset: {

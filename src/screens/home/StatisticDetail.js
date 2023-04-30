@@ -1,28 +1,31 @@
 import React, { useState } from "react";
-import {
-  StyleSheet,
-  View,
-  Text,
-  Modal,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-} from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity, Image } from "react-native";
 import { Icon } from "react-native-elements";
 import { theme } from "../../core/theme";
 import { getDateArray } from "../../helpers/getDate";
-import { evalEnv } from "../../helpers/evalEnv";
+import { LineChart } from "react-native-chart-kit";
 
-export default function StatisticScreen({ navigation }) {
+export default function StatisticDetail({ navigation, route }) {
+  const env = ["Độ ẩm", "Nhiệt độ", "Độ sáng", "Tiếng ồn"];
+  const { itemId } = route.params;
   const timestamp = new Date();
   const dateArray = getDateArray(timestamp);
 
   const [modalVisible, setModalVisible] = useState(false);
   const statusValues = ["45.6", "26.9", "27", "10"];
-  const evals = evalEnv(statusValues);
 
-  const onPressItem = (id) => {
-    setModalVisible(!modalVisible);
-    navigation.navigate('StatisticDetail', { itemId: id });
+  const data = {
+    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+    datasets: [
+      {
+        data: [20, 45, 28, 80, 99, 43],
+        color: (opacity = 1) => `rgba(255, 0, 0, ${opacity})`,
+      },
+      {
+        data: [50, 10, 90, 80, 75, 35],
+        color: (opacity = 1) => `rgba(0, 255, 0, ${opacity})`,
+      },
+    ],
   };
 
   return (
@@ -30,18 +33,57 @@ export default function StatisticScreen({ navigation }) {
     //   <Header>DMM</Header>
     // </Background>
     <View style={{ backgroundColor: "#fff", height: "100%" }}>
-      <View style={styles.container}>
-        <View style={styles.childContainer}>
-          <Text style={styles.containerText}>Pasic Office</Text>
-          <Text style={styles.whiteContainerText}>Chỉ số môi trường</Text>
-        </View>
-        <View style={styles.childContainer}>
-          <Text style={styles.containerText}>Đánh giá</Text>
-          <Text style={styles.whiteContainerText}>{evals}</Text>
+      <View style={styles.header}>
+        <Text style={styles.headerText}>Thống kê {env[itemId]}</Text>
+        <View style={styles.headerBack}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Image
+              style={{ width: 24, height: 24 }}
+              source={require("../../assets/arrow_back.png")}
+            />
+          </TouchableOpacity>
         </View>
       </View>
 
-      <View style={styles.horizontalLine} />
+      {/* <View>
+        <LineChart
+          data={data}
+          width={320}
+          height={220}
+          chartConfig={{
+            backgroundColor: "#ffffff",
+            backgroundGradientFrom: "#ffffff",
+            backgroundGradientTo: "#ffffff",
+            decimalPlaces: 0,
+            color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+            labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+          }}
+          bezier
+          style={{
+            marginVertical: 8,
+            borderRadius: 16,
+          }}
+        />
+      </View> */}
+
+      {/* <View style={styles.container}>
+        <View style={styles.childContainer}>
+          <Text style={styles.containerText}>
+            Pasic Office
+          </Text>
+          <Text style={styles.whiteContainerText}>Chỉ số môi trường</Text>
+        </View>
+        <View style={styles.childContainer}> 
+          <Text style={styles.containerText}>
+            Đánh giá
+          </Text>
+          <Text style={styles.whiteContainerText}>
+            Tốt
+          </Text>
+        </View>
+      </View> */}
+
+      {/* <View style={styles.horizontalLine} />
 
       <View style={styles.dateContainer}>
         <Icon
@@ -50,14 +92,10 @@ export default function StatisticScreen({ navigation }) {
           size={20}
           color={theme.colors.secondary}
         />
-        <Text style={styles.dateText}>
-          {" "}
-          {dateArray[0]}, Ngày {dateArray[1]} tháng {dateArray[2]} năm{" "}
-          {dateArray[3]}
-        </Text>
-      </View>
+        <Text style={styles.dateText}>  {dateArray[0]}, Ngày {dateArray[1]} tháng {dateArray[2]} năm {dateArray[3]}</Text>
+      </View> */}
 
-      <Text style={styles.sectionText}>Thống kê hiện tại</Text>
+      <Text style={styles.sectionText}>Biểu đồ thống kê</Text>
 
       <View style={styles.status}>
         <View style={{ flexDirection: "row", padding: 20 }}>
@@ -125,59 +163,28 @@ export default function StatisticScreen({ navigation }) {
           </View>
         </View>
       </View>
-
-      <View style={styles.horizontalLine} />
-
-      <View style={styles.detailView}>
-        <Modal
-          animationType="fade"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => {
-            setModalVisible(!modalVisible);
-          }}
-        >
-          <TouchableWithoutFeedback onPress={() => setModalVisible(!modalVisible)}>
-            <View style={styles.modalOverlay} />
-          </TouchableWithoutFeedback>
-          <View style={styles.modalView}>
-            <TouchableOpacity
-              onPress={() => onPressItem(0)}
-            >
-              <Text style={styles.modalText}>Độ ẩm</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => onPressItem(1)}
-            >
-              <Text style={styles.modalText}>Nhiệt độ</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => onPressItem(2)}
-            >
-              <Text style={styles.modalText}>Độ sáng</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => onPressItem(3)}
-            >
-              <Text style={styles.modalText}>Tiếng ồn</Text>
-            </TouchableOpacity>
-          </View>
-        </Modal>
-        <Text style={styles.sectionText}>Thống kê chi tiết</Text>
-        <Icon
-          name="chevron-right"
-          type="feather"
-          size={30}
-          onPress={() => {
-            setModalVisible(true);
-          }}
-        />
-      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  header: {
+    marginTop: 50,
+    flexDirection: "row",
+    alignItems: "center",
+    marginHorizontal: "10%",
+    justifyContent: "space-around",
+    width: "100%",
+  },
+  headerText: {
+    fontSize: 20,
+    fontWeight: "500",
+    textAlign: "center",
+  },
+  headerBack: {
+    alignItems: "flex-end",
+    marginRight: "5%",
+  },
   horizontalLine: {
     borderBottomColor: "#ccc",
     borderBottomWidth: StyleSheet.hairlineWidth * 5,
@@ -236,14 +243,18 @@ const styles = StyleSheet.create({
     marginLeft: "5%",
   },
   modalView: {
-    backgroundColor: "#fff",
-    width: 140,
-    backgroundColor: "#fff",
-    borderColor: "#ccc",
+    backgroundColor: theme.colors.primary,
     borderRadius: 20,
-    position: "absolute",
-    top: "80%",
-    right: "5%",
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
   },
   status: {
     width: "90%",
@@ -285,15 +296,5 @@ const styles = StyleSheet.create({
     fontSize: 20,
     marginLeft: "10%",
     marginVertical: "5%",
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
-  modalText: {
-    fontSize: 16,
-    fontWeight: "500",
-    textAlign: "center",
-    padding: "5%",
   },
 });

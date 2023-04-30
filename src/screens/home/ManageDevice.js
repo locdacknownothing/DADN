@@ -7,6 +7,7 @@ import PaperButton from "../../components/Button";
 import { StyleSheet, View, Text, ScrollView, Switch } from "react-native";
 import { Avatar, Icon } from "react-native-elements";
 import { Button } from "react-native-paper";
+import { theme } from "../../core/theme";
 
 const NUM_DEVICES = 10
 
@@ -14,10 +15,10 @@ const devices = [
   { id: "1", name: "Device 1" },
   { id: "2", name: "Device 2" },
   { id: "3", name: "Device 3" },
-  { id: "4", name: "Device 4" },
-  { id: "5", name: "Device 5" },
-  { id: "6", name: "Device 6" },
-  { id: "7", name: "Device 7" },
+  // { id: "4", name: "Device 4" },
+  // { id: "5", name: "Device 5" },
+  // { id: "6", name: "Device 6" },
+  // { id: "7", name: "Device 7" },
   { id: "8", name: "Device 8" },
   { id: "9", name: "Device 9" },
   { id: "10", name: "Device 10" },
@@ -114,7 +115,7 @@ export default function ManageDevice({ navigation }) {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#C4DAF5",
+    backgroundColor: theme.colors.subsubprime,
     height: "100%",
     borderTopLeftRadius: 50,
     borderTopRightRadius: 50,
@@ -208,22 +209,3 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
   },
 });
-
-{
-  /* <Logo />
-      <Header>Trang chủ</Header>
-      <Paragraph>
-        Làm thêm page từ đây nè!
-      </Paragraph>
-      <PaperButton
-        mode="outlined"
-        onPress={() =>
-          navigation.reset({
-            index: 0,
-            routes: [{ name: 'StartScreen' }],
-          })
-        }
-      >
-        Đăng xuất
-      </PaperButton> */
-}

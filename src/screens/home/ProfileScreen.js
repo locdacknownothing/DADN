@@ -7,11 +7,14 @@ import Paragraph from '../../components/Paragraph'
 import PaperButton from '../../components/Button'
 import { Avatar } from 'react-native-elements'
 import { Button } from 'react-native-paper'
+import { theme } from '../../core/theme'
+
 {/* <Avatar 
 rounded title="MD" 
 size={120}
 containerStyle={{alignSelf: 'center', backgroundColor:'#000', marginTop: 30}}
 avatarStyle={{}}/> */}
+
 export default function ProfileScreen({ navigation }) {
   return (
     // Avatar with Title
@@ -127,7 +130,7 @@ export default function ProfileScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {backgroundColor: '#C4DAF5', height:'100%', borderTopLeftRadius: 50, borderTopRightRadius: 50},
+  container: {backgroundColor: theme.colors.subsubprime, height:'100%', borderTopLeftRadius: 50, borderTopRightRadius: 50},
   avatarContainer: {backgroundColor: "#FDEDEB", height: 110, width: 110, alignSelf: 'center', borderRadius: 100, marginTop: 20, marginBottom: 10, alignItems: 'center',
                       shadowColor: "#000",
                       shadowOffset: {

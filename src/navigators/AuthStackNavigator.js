@@ -6,6 +6,7 @@ import {
   LoginScreen,
   RegisterScreen,
   ResetPasswordScreen,
+  StatisticDetail,
 } from '../screens'
 import DrawerNavigator from './DrawerNavigator';
 
@@ -22,10 +23,10 @@ export default function AuthStackNavigator() {
         name={"HomeScreen"}
         component={DrawerNavigator}
       />
-      {/* <Stack.Screen
-        name={"ProfileScreen"}
-        component={DrawerNavigator}
-      /> */}
+      <Stack.Screen
+        name={"StatisticDetail"}
+        component={StatisticDetail}
+      />
       {/* <Stack.Screen
         name={"Quản lý thiết bị"}
         component={DrawerNavigator}
