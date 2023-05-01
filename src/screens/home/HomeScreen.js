@@ -41,7 +41,7 @@ export default function HomeScreen({navigation}) {
         // setLightValue(data5.last_value);
         // setHallwaysLightValue(data6.last_value);
         // setFanValue(data7.last_value);
-        console.log("UPDATE");
+        // console.log("UPDATE");
       }
       catch(err){
         console.log(err);
