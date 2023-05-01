@@ -22,11 +22,12 @@ class EncodeFace(Resource):
 
 class Login(Resource):
     def post(self):
-        q = f"SELECT id FROM account WHERE account.email == '{request.form['email']}' AND account.password == '{request.form['password']}'"
+        email, password = request.get_json(True).values()
+        q = f"SELECT id FROM account WHERE account.email == '{email}' AND account.password == '{password}'"
         emp_id = next(conn.execute(q), None)
-        if emp_id:
+        if emp_id is not None:
             i, name, role = next(conn.execute(
-                f"SELECT id, name, role FROM user WHERE user.id == {emp_id}"))
+                f"SELECT id, name, role FROM user WHERE user.id == {emp_id[0]}"))
             return {'id': i, 'name': name, 'role': role}
         else:
             return None
