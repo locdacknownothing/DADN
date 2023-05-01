@@ -27,44 +27,69 @@ export default function HomeScreen({navigation}) {
   const [fanValue, setFanValue] = useState(0);
 
   useEffect(() => {
-    setInterval(() => {
-      Promise.all([
-        fetch(temp_url),
-        fetch(humi_url),
-        fetch(brightness_url),
-        fetch(noise_url),
-        // fetch(light_url),
-        // fetch(hallways_light_url),
-        // fetch(fan_url)
-      ])
-      .then(([res1, 
-        res2, 
-        res3, 
-        res4, 
-        // res5, 
-        // res6, 
-        // res7
-      ]) =>
-        Promise.all([res1.json(), 
-          res2.json(), 
-          res3.json(), 
-          res4.json(), 
-          // res5.json(), 
-          // res6.json(), 
-          // res7.json()
-        ])
-      )
-      .then(([data1, data2, data3, data4, data5, data6, data7]) => {
-        setTempValue(data1.last_value);
-        setHumiValue(data2.last_value);
-        setBrightValue(data3.last_value);
-        setNoiseValue(data4.last_value);
+    const myFunc = async() => {
+      try {
+        let [data1, data2, data3, data4] = await Promise.all([fetch(temp_url).then(res1 => res1.json()).then(data1 => setTempValue(data1.last_value)),
+                                                              fetch(humi_url).then(res2 => res2.json()).then(data2 => setHumiValue(data2.last_value)),
+                                                              fetch(brightness_url).then(res3 => res3.json()).then(data3 => setBrightValue(data3.last_value)),
+                                                              fetch(noise_url).then(res4 => res4.json()).then(data4 => setNoiseValue(data4.last_value))]);
+        // let [data1, data2, data3, data4] = [res1.json(), res2.json(), res3.json(), res4.json()];
+        // let [] = await Promise.all([setTempValue(data1.last_value),
+        // setHumiValue(data2.last_value),
+        // setBrightValue(data3.last_value),
+        // setNoiseValue(data4.last_value)])
         // setLightValue(data5.last_value);
         // setHallwaysLightValue(data6.last_value);
         // setFanValue(data7.last_value);
         console.log("UPDATE");
-      })
-    }, 20000)
+      }
+      catch(err){
+        console.log(err);
+      };
+    };
+    myFunc();
+    setInterval(() => {
+      myFunc();
+    }, 10000);
+
+    // setInterval(() => {
+      // Promise.all([
+      //   fetch(temp_url),
+      //   fetch(humi_url),
+      //   fetch(brightness_url),
+      //   fetch(noise_url),
+      //   // fetch(light_url),
+      //   // fetch(hallways_light_url),
+      //   // fetch(fan_url)
+      // ])
+      // .then(([res1, 
+      //   res2, 
+      //   res3, 
+      //   res4, 
+      //   // res5, 
+      //   // res6, 
+      //   // res7
+      // ]) =>
+      //   Promise.all([res1.json(), 
+      //     res2.json(), 
+      //     res3.json(), 
+      //     res4.json(), 
+      //     // res5.json(), 
+      //     // res6.json(), 
+      //     // res7.json()
+      //   ])
+      // )
+      // .then(([data1, data2, data3, data4, data5, data6, data7]) => {
+      //   setTempValue(data1.last_value);
+      //   setHumiValue(data2.last_value);
+      //   setBrightValue(data3.last_value);
+      //   setNoiseValue(data4.last_value);
+      //   // setLightValue(data5.last_value);
+      //   // setHallwaysLightValue(data6.last_value);
+      //   // setFanValue(data7.last_value);
+      //   console.log("UPDATE");
+      // })
+    // }, 20000)
   })
 
   return (
@@ -109,7 +134,7 @@ export default function HomeScreen({navigation}) {
                 <Icon name="bulb" type='ionicon' size={25} containerStyle={{marginTop: 7}}/>
               </View>
               <Text style={{fontWeight: 'bold', fontSize: 18}}>Ánh sáng</Text>
-              <Text>{brightValue} lux</Text>
+              <Text>{brightValue}lux</Text>
             </View>
             
             <View style={styles.statusElement}>
