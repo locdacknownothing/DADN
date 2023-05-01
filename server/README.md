@@ -17,7 +17,7 @@ Server Usage:
 2. Attendance Checking:
 
    - Method: GET
-   - URL: http://127.0.0.1:5000/attcheck/\<employee-id>
+   - URL: http://127.0.0.1:5000/attcheck/<employee-id\>
    - Usage:
 
      - \<employee-id> is empty: return all employee that is not manager.
