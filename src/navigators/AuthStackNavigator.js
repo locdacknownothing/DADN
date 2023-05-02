@@ -26,6 +26,10 @@ export default function AuthStackNavigator() {
       <Stack.Screen
         name={"StatisticDetail"}
         component={StatisticDetail}
+        options={{
+          headerShown: true,
+          title: "Biểu đồ thống kê",
+        }}
       />
       {/* <Stack.Screen
         name={"Quản lý thiết bị"}

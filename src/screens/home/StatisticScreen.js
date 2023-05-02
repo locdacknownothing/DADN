@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   View,
@@ -10,25 +10,65 @@ import {
 import { Icon } from "react-native-elements";
 import { theme } from "../../core/theme";
 import { getDateArray } from "../../helpers/getDate";
-import { evalEnv } from "../../helpers/evalEnv";
+import { evaluateEnvironment } from "../../helpers/evalEnv";
 
 export default function StatisticScreen({ navigation }) {
   const timestamp = new Date();
   const dateArray = getDateArray(timestamp);
 
   const [modalVisible, setModalVisible] = useState(false);
-  const statusValues = ["45.6", "26.9", "27", "10"];
-  const evals = evalEnv(statusValues);
-
   const onPressItem = (id) => {
     setModalVisible(!modalVisible);
-    navigation.navigate('StatisticDetail', { itemId: id });
+    navigation.navigate("StatisticDetail", { itemId: id });
   };
+  
+  const temp_url = "https://io.adafruit.com/api/v2/Vyvy0812/feeds/pasic-smart-office.temperature";
+  const humi_url = "https://io.adafruit.com/api/v2/Vyvy0812/feeds/pasic-smart-office.humidity";
+  const brightness_url = "https://io.adafruit.com/api/v2/Vyvy0812/feeds/pasic-smart-office.brightness";
+  const noise_url = "https://io.adafruit.com/api/v2/Vyvy0812/feeds/pasic-smart-office.noise";
+
+  const [tempValue, setTempValue] = useState(0);
+  const [humiValue, setHumiValue] = useState(0);
+  const [brightValue, setBrightValue] = useState(0);
+  const [noiseValue, setNoiseValue] = useState(0);
+  const RESET_TIME = 20000;
+
+  useEffect(() => {
+    setInterval(() => {
+      Promise.all([
+        fetch(temp_url),
+        fetch(humi_url),
+        fetch(brightness_url),
+        fetch(noise_url),
+      ])
+      .then(([
+        res1, 
+        res2, 
+        res3, 
+        res4,
+      ]) =>
+        Promise.all([
+          res1.json(), 
+          res2.json(), 
+          res3.json(), 
+          res4.json(),
+        ])
+      )
+      .then(([data1, data2, data3, data4]) => {
+        setTempValue(data1.last_value);
+        setHumiValue(data2.last_value);
+        setBrightValue(data3.last_value);
+        setNoiseValue(data4.last_value);
+      })
+      .catch(error => {
+        console.error(error.message);
+      });
+    }, RESET_TIME)
+  })
+
+  const evals = evaluateEnvironment(humiValue, tempValue, brightValue, noiseValue);
 
   return (
-    // <Background>
-    //   <Header>DMM</Header>
-    // </Background>
     <View style={{ backgroundColor: "#fff", height: "100%" }}>
       <View style={styles.container}>
         <View style={styles.childContainer}>
@@ -73,7 +113,7 @@ export default function StatisticScreen({ navigation }) {
             </View>
             <Text style={styles.statusName}>Độ ẩm</Text>
             <View style={styles.statusCircle}>
-              <Text style={styles.statusValue}>{statusValues[0]}%</Text>
+              <Text style={styles.statusValue}>{humiValue}%</Text>
             </View>
           </View>
           <View
@@ -88,7 +128,7 @@ export default function StatisticScreen({ navigation }) {
             </View>
             <Text style={styles.statusName}>Nhiệt độ</Text>
             <View style={styles.statusCircle}>
-              <Text style={styles.statusValue}>{statusValues[1]}°C</Text>
+              <Text style={styles.statusValue}>{tempValue}°C</Text>
             </View>
           </View>
         </View>
@@ -105,7 +145,7 @@ export default function StatisticScreen({ navigation }) {
             </View>
             <Text style={styles.statusName}>Độ sáng</Text>
             <View style={styles.statusCircle}>
-              <Text style={styles.statusValue}>{statusValues[2]}lux</Text>
+              <Text style={styles.statusValue}>{brightValue}lux</Text>
             </View>
           </View>
           <View
@@ -120,7 +160,7 @@ export default function StatisticScreen({ navigation }) {
             </View>
             <Text style={styles.statusName}>Tiếng ồn</Text>
             <View style={styles.statusCircle}>
-              <Text style={styles.statusValue}>{statusValues[3]}dB</Text>
+              <Text style={styles.statusValue}>{noiseValue}dB</Text>
             </View>
           </View>
         </View>
@@ -210,7 +250,7 @@ const styles = StyleSheet.create({
   whiteContainerText: {
     flex: 1,
     textAlign: "center",
-    fontWeight: "600",
+    fontWeight: "500",
     fontSize: 24,
     color: "#fff",
   },

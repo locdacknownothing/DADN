@@ -1,5 +1,10 @@
-import React, { useState } from "react";
-import { StyleSheet, View, Text, TouchableOpacity, Image } from "react-native";
+import React, { useState, useEffect } from "react";
+import {
+  StyleSheet,
+  View,
+  Text,
+  Dimensions,
+} from "react-native";
 import { Icon } from "react-native-elements";
 import { theme } from "../../core/theme";
 import { getDateArray } from "../../helpers/getDate";
@@ -7,11 +12,11 @@ import { LineChart } from "react-native-chart-kit";
 
 export default function StatisticDetail({ navigation, route }) {
   const env = ["Độ ẩm", "Nhiệt độ", "Độ sáng", "Tiếng ồn"];
+  const unit = ["%", "°C", "lux", "dB"];
   const { itemId } = route.params;
   const timestamp = new Date();
-  const dateArray = getDateArray(timestamp);
+  // const dateArray = getDateArray(timestamp);
 
-  const [modalVisible, setModalVisible] = useState(false);
   const statusValues = ["45.6", "26.9", "27", "10"];
 
   const data = {
@@ -19,21 +24,15 @@ export default function StatisticDetail({ navigation, route }) {
     datasets: [
       {
         data: [20, 45, 28, 80, 99, 43],
-        color: (opacity = 1) => `rgba(255, 0, 0, ${opacity})`,
-      },
-      {
-        data: [50, 10, 90, 80, 75, 35],
-        color: (opacity = 1) => `rgba(0, 255, 0, ${opacity})`,
+        color: (opacity = 1) => `rgba(77, 169, 255, ${opacity})`,
       },
     ],
+    legend: [env[itemId]],
   };
 
   return (
-    // <Background>
-    //   <Header>DMM</Header>
-    // </Background>
     <View style={{ backgroundColor: "#fff", height: "100%" }}>
-      <View style={styles.header}>
+      {/* <View style={styles.header}>
         <Text style={styles.headerText}>Thống kê {env[itemId]}</Text>
         <View style={styles.headerBack}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -43,59 +42,33 @@ export default function StatisticDetail({ navigation, route }) {
             />
           </TouchableOpacity>
         </View>
+      </View> */}
+      <View style={styles.sectionContainer}>
+        <Text style={styles.sectionText}>Thống kê {env[itemId]}</Text>
+        <View style={{flex: 1, justifyContent: "flex-end"}}>
+          <Icon name="stats-chart-outline" type="ionicon" size={25} color="#000" />
+        </View>
       </View>
 
-      {/* <View>
+      <View style={styles.chartContainer}>
         <LineChart
           data={data}
-          width={320}
+          width={Dimensions.get("window").width * 0.9}
           height={220}
           chartConfig={{
             backgroundColor: "#ffffff",
             backgroundGradientFrom: "#ffffff",
             backgroundGradientTo: "#ffffff",
             decimalPlaces: 0,
-            color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+            color: (opacity = 1) => `rgba(77, 169, 255, ${opacity})`,
             labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
           }}
           bezier
-          style={{
-            marginVertical: 8,
-            borderRadius: 16,
-          }}
+          style={styles.chart}
         />
-      </View> */}
+      </View>
 
-      {/* <View style={styles.container}>
-        <View style={styles.childContainer}>
-          <Text style={styles.containerText}>
-            Pasic Office
-          </Text>
-          <Text style={styles.whiteContainerText}>Chỉ số môi trường</Text>
-        </View>
-        <View style={styles.childContainer}> 
-          <Text style={styles.containerText}>
-            Đánh giá
-          </Text>
-          <Text style={styles.whiteContainerText}>
-            Tốt
-          </Text>
-        </View>
-      </View> */}
-
-      {/* <View style={styles.horizontalLine} />
-
-      <View style={styles.dateContainer}>
-        <Icon
-          name="calendar-outline"
-          type="ionicon"
-          size={20}
-          color={theme.colors.secondary}
-        />
-        <Text style={styles.dateText}>  {dateArray[0]}, Ngày {dateArray[1]} tháng {dateArray[2]} năm {dateArray[3]}</Text>
-      </View> */}
-
-      <Text style={styles.sectionText}>Biểu đồ thống kê</Text>
+      <View style={styles.horizontalLine} />
 
       <View style={styles.status}>
         <View style={{ flexDirection: "row", padding: 20 }}>
@@ -106,12 +79,9 @@ export default function StatisticDetail({ navigation, route }) {
               justifyContent: "flex-start",
             }}
           >
-            <View style={{}}>
-              <Icon name="droplet" type="feather" size={25} color="#fff" />
-            </View>
-            <Text style={styles.statusName}>Độ ẩm</Text>
+            <Text style={styles.statusName}>Hiện tại</Text>
             <View style={styles.statusCircle}>
-              <Text style={styles.statusValue}>{statusValues[0]}%</Text>
+              <Text style={styles.statusValue}>{"hi"}{unit[itemId]}</Text>
             </View>
           </View>
           <View
@@ -121,12 +91,9 @@ export default function StatisticDetail({ navigation, route }) {
               justifyContent: "flex-end",
             }}
           >
-            <View style={{}}>
-              <Icon name="thermometer" type="feather" size={25} color="#fff" />
-            </View>
-            <Text style={styles.statusName}>Nhiệt độ</Text>
+            <Text style={styles.statusName}>Trung bình</Text>
             <View style={styles.statusCircle}>
-              <Text style={styles.statusValue}>{statusValues[1]}°C</Text>
+              <Text style={styles.statusValue}>{"hi"}{unit[itemId]}</Text>
             </View>
           </View>
         </View>
@@ -138,12 +105,9 @@ export default function StatisticDetail({ navigation, route }) {
               justifyContent: "flex-start",
             }}
           >
-            <View style={{}}>
-              <Icon name="bulb" type="ionicon" size={25} color="#fff" />
-            </View>
-            <Text style={styles.statusName}>Độ sáng</Text>
+            <Text style={styles.statusName}>Cao nhất</Text>
             <View style={styles.statusCircle}>
-              <Text style={styles.statusValue}>{statusValues[2]}lux</Text>
+              <Text style={styles.statusValue}>{"hi"}{unit[itemId]}</Text>
             </View>
           </View>
           <View
@@ -153,12 +117,9 @@ export default function StatisticDetail({ navigation, route }) {
               justifyContent: "flex-end",
             }}
           >
-            <View style={{}}>
-              <Icon name="barcode" type="ionicon" size={25} color="#fff" />
-            </View>
-            <Text style={styles.statusName}>Tiếng ồn</Text>
+            <Text style={styles.statusName}>Thấp nhất</Text>
             <View style={styles.statusCircle}>
-              <Text style={styles.statusValue}>{statusValues[3]}dB</Text>
+              <Text style={styles.statusValue}>{"hi"}{unit[itemId]}</Text>
             </View>
           </View>
         </View>
@@ -168,93 +129,52 @@ export default function StatisticDetail({ navigation, route }) {
 }
 
 const styles = StyleSheet.create({
-  header: {
-    marginTop: 50,
+  // header: {
+  //   marginTop: 50,
+  //   flexDirection: "row",
+  //   alignItems: "center",
+  //   marginHorizontal: "10%",
+  //   justifyContent: "space-around",
+  //   width: "100%",
+  // },
+  // headerText: {
+  //   fontSize: 20,
+  //   fontWeight: "500",
+  //   textAlign: "center",
+  // },
+  // headerBack: {
+  //   alignItems: "flex-end",
+  //   marginRight: "5%",
+  // },
+  sectionContainer: {
     flexDirection: "row",
-    alignItems: "center",
-    marginHorizontal: "10%",
-    justifyContent: "space-around",
-    width: "100%",
+    margin: "5%",
   },
-  headerText: {
-    fontSize: 20,
+  sectionText: {
     fontWeight: "500",
-    textAlign: "center",
+    fontSize: 20,
   },
-  headerBack: {
-    alignItems: "flex-end",
-    marginRight: "5%",
+  chartContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  chart: {
+    width: "90%",
+    borderRadius: 15,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.32,
+    shadowRadius: 5.46,
+    elevation: 9,
   },
   horizontalLine: {
     borderBottomColor: "#ccc",
     borderBottomWidth: StyleSheet.hairlineWidth * 5,
-    marginTop: "5%",
+    marginVertical: "5%",
     marginHorizontal: "5%",
-  },
-  container: {
-    backgroundColor: theme.colors.primary,
-    height: 140,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingHorizontal: "5%",
-    margin: "5%",
-    marginBottom: 0,
-    alignItems: "center",
-    borderRadius: 25,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  childContainer: {
-    alignContent: "space-between",
-    paddingVertical: "10%",
-  },
-  whiteContainerText: {
-    flex: 1,
-    textAlign: "center",
-    fontWeight: "600",
-    fontSize: 24,
-    color: "#fff",
-  },
-  containerText: {
-    flex: 1,
-    fontWeight: "600",
-    fontSize: 16,
-  },
-  dateContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginLeft: "10%",
-    marginTop: "5%",
-  },
-  dateText: {
-    fontWeight: "500",
-    fontSize: 16,
-    color: theme.colors.secondary,
-  },
-  detailView: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginLeft: "5%",
-  },
-  modalView: {
-    backgroundColor: theme.colors.primary,
-    borderRadius: 20,
-    padding: 35,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
   },
   status: {
     width: "90%",
@@ -290,11 +210,5 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 24,
     fontWeight: 700,
-  },
-  sectionText: {
-    fontWeight: "600",
-    fontSize: 20,
-    marginLeft: "10%",
-    marginVertical: "5%",
   },
 });

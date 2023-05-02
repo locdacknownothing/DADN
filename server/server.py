@@ -77,4 +77,4 @@ api.add_resource(EmployeeAttendanceChecking,
 api.add_resource(Login, "/login/")
 api.add_resource(EncodeFace, "/encode/")
 
-app.run()
+app.run(host='0.0.0.0', port=5000)
