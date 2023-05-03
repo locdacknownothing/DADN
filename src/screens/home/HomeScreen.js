@@ -1,8 +1,7 @@
 import React , { useState, useEffect } from 'react'
-import Background from '../../components/Background'
-import Header from '../../components/Header'
 import { StyleSheet, View, Text, Switch } from 'react-native'
 import { Avatar, Icon } from 'react-native-elements'
+import { useParams } from 'react-router-dom'
 import { Button } from 'react-native-paper'
 import { theme } from '../../core/theme'
 
@@ -16,7 +15,13 @@ const fan_url = "https://io.adafruit.com/api/v2/Vyvy0812/feeds/pasic-smart-offic
 
 let TIMEOUT_MS = 5000;
 
-export default function HomeScreen({navigation}) {
+export default function HomeScreen({ navigation, route }) {
+  console.log(route);
+  const name = route.params.name;
+  const role = route.params.role;
+  const roleName = ["Employee", "Manager"];
+  // console.log("role: ", role)
+
   const [tempValue, setTempValue] = useState(0);
   const [humiValue, setHumiValue] = useState(0);
   const [brightValue, setBrightValue] = useState(0);
@@ -64,10 +69,10 @@ export default function HomeScreen({navigation}) {
             }}/>
           </View>
           <Text style={styles.name}>
-            Trương Nguyễn Khôi Nguyên
+            {name}
           </Text>
-          <Text  style={styles.role}>
-            Employee
+          <Text  style={styles.role_}>
+            {roleName[role]}
           </Text>
         </View>
 
@@ -137,34 +142,37 @@ export default function HomeScreen({navigation}) {
               </View>
             </View>
 
-            <View style={{borderColor: '#3f3f3f', borderWidth: 1, marginTop: 3, marginBottom: 15}}></View>
-
-            <View style={styles.serviceButton}>
-              <View style={{}}>
-                <Icon name="list" type='feather' color='#fff' size={25} containerStyle={{marginLeft: 10}}/>
-              </View>
-              <Text style={{color: "#fff", marginLeft: 15, height: '100%', fontSize: 20, fontWeight: '500'}}>
-                Xem danh sách nhân viên
-              </Text>
+            {role == 1 ? (
               <View>
-                <Icon name="chevron-right" type="AntDesign" color='#fff' size={30} containerStyle={{marginLeft: 25}}
-                  onPress={() => navigation.navigate('Danh sách nhân viên')}/>
-              </View>
-            </View>
-            
-            <View style={styles.serviceButton}>
-              <View style={{}}>
-                <Icon name="bar-chart-2" type='feather' color='#fff' size={25} containerStyle={{marginLeft: 10}}/>
-              </View>
-              <Text style={{color: "#fff", marginLeft: 15, height: '100%', fontSize: 20, fontWeight: '500'}}>
-                Biểu đồ thống kê
-              </Text>
-              <View>
-                <Icon name="chevron-right" type="AntDesign" color='#fff' size={30} containerStyle={{marginLeft: 103}}
-                  onPress={() => navigation.navigate('Biểu đồ thống kê')}/>
-              </View>
-            </View>
+                <View style={{borderColor: '#3f3f3f', borderWidth: 1, marginTop: 3, marginBottom: 15}}></View>
 
+                <View style={styles.serviceButton}>
+                  <View style={{}}>
+                    <Icon name="list" type='feather' color='#fff' size={25} containerStyle={{marginLeft: 10}}/>
+                  </View>
+                  <Text style={{color: "#fff", marginLeft: 15, height: '100%', fontSize: 20, fontWeight: '500'}}>
+                    Xem danh sách nhân viên
+                  </Text>
+                  <View>
+                    <Icon name="chevron-right" type="AntDesign" color='#fff' size={30} containerStyle={{marginLeft: 25}}
+                      onPress={() => navigation.navigate('Danh sách nhân viên')}/>
+                  </View>
+                </View>
+
+                <View style={styles.serviceButton}>
+                  <View style={{}}>
+                    <Icon name="bar-chart-2" type='feather' color='#fff' size={25} containerStyle={{marginLeft: 10}}/>
+                  </View>
+                  <Text style={{color: "#fff", marginLeft: 15, height: '100%', fontSize: 20, fontWeight: '500'}}>
+                    Biểu đồ thống kê
+                  </Text>
+                  <View>
+                    <Icon name="chevron-right" type="AntDesign" color='#fff' size={30} containerStyle={{marginLeft: 103}}
+                      onPress={() => navigation.navigate('Biểu đồ thống kê')}/>
+                  </View>
+                </View>
+              </View>
+            ): null}
           </View>
         </View>
       </View>
@@ -185,7 +193,7 @@ const styles = StyleSheet.create({
                     
                     elevation: 9,},
   name: {fontSize: 24, textAlign: 'center', fontWeight: '600'},
-  role: {color: '#DF3222', fontSize: 20, fontWeight: '500'},
+  role_: {color: '#DF3222', fontSize: 20, fontWeight: '500'},
   body: {backgroundColor: '#fff', position: 'absolute', bottom: 0, height: "71%", width: '100%'},
   status: {flexDirection: 'row', height: 114, width: '93%', alignSelf: 'center', marginTop: 24, justifyContent: 'center', borderRadius: 15, backgroundColor: '#fff',
             shadowColor: "#000",

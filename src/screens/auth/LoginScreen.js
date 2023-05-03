@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { TouchableOpacity, StyleSheet, View } from 'react-native'
 import { Text } from 'react-native-paper'
+import { useHistory } from 'react-router-dom'
 import Background from '../../components/Background'
 import Logo from '../../components/Logo'
 import Header from '../../components/Header'
@@ -10,12 +11,13 @@ import BackButton from '../../components/BackButton'
 import { theme } from '../../core/theme'
 import { emailValidator } from '../../helpers/emailValidator'
 import { passwordValidator } from '../../helpers/passwordValidator'
+import DrawerNavigator from '../../navigators/DrawerNavigator'
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState({ value: '', error: '' })
   const [password, setPassword] = useState({ value: '', error: '' })
 
-  const onLoginPressed = () => {
+  const onLoginPressed = async () => {
     const emailError = emailValidator(email.value)
     const passwordError = passwordValidator(password.value)
     if (emailError || passwordError) {
@@ -23,15 +25,43 @@ export default function LoginScreen({ navigation }) {
       setPassword({ ...password, error: passwordError })
       return
     }
-    // navigation.reset({
-    //   index: 0,
-    //   routes: [{ name: 'HomeScreen' }],
-    // })
-    navigation.navigate('HomeScreen')
+    // // navigation.reset({
+    // //   index: 0,
+    // //   routes: [{ name: 'HomeScreen' }],
+    // // })
+    const data = { email: email.value, password: password.value };
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data)
+    };
+
+    const response = await fetch('http://192.168.1.7:5000/login/', options)
+    const user = await response.json();
+
+    if (user !== null) {
+      // console.log("navigate with user ", user)
+      navigation.navigate("HomeScreen", { user: user })    
+    }
+    else {
+      setPassword({ ...password, error: "Sai tài khoản hoặc mật khẩu" })
+    }
+      // , {
+        // screen: "Trang chủ",
+        // params: { user: user }})
+
+      // return <DrawerNavigator userRole={user.role} />
   }
 
   return (
     <Background>
+      {/* {
+        user !== null ? (
+          <DrawerNavigator userRole={user.role} />
+        ) : null
+      } */}
       <BackButton goBack={navigation.goBack} />
       <Logo />
       <Header>Đăng nhập</Header>

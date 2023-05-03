@@ -18,8 +18,11 @@ import BackButton from '../components/BackButton'
 
 const Drawer = createDrawerNavigator()
 
-export default function DrawerNavigator() {
-  // var focused = true;
+export default function DrawerNavigator({ route }) {
+  const user = route.params.user;
+  // console.log("Drawer: ", user)
+  const userRole = user.role;
+
   return (
     <Drawer.Navigator 
       drawerContent={(props) => <CustomDrawer {...props} />}
@@ -37,6 +40,7 @@ export default function DrawerNavigator() {
             <Icon name="home" type='feather' size={18} color={focused ? theme.colors.white: theme.colors.text} />
           ),
         }}
+        initialParams={user}
       />
       <Drawer.Screen 
         name="Thông tin cá nhân" 
@@ -88,6 +92,7 @@ export default function DrawerNavigator() {
             </TouchableOpacity>
           ),
         })} />
+      {userRole === 1 ? (
       <Drawer.Screen 
         name="Danh sách nhân viên" 
         component={EmployeeList}
@@ -104,6 +109,9 @@ export default function DrawerNavigator() {
             </TouchableOpacity>
           ),
         })} />
+      ) : null}
+
+      {userRole === 1 ? (
       <Drawer.Screen 
         name="Biểu đồ thống kê" 
         component={StatisticScreen}
@@ -120,6 +128,8 @@ export default function DrawerNavigator() {
             </TouchableOpacity>
           ),
         })} />
+      ) : null}
+    
       <Drawer.Screen 
         name="Cài đặt" 
         component={Settings} 
