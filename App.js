@@ -11,8 +11,8 @@ export default function App() {
   return (
     <Provider theme={theme}>
       <NavigationContainer>
-        <EmployeeList/>
-        {/* <AuthStackNavigator /> */}
+        {/* <EmployeeList/> */}
+        <AuthStackNavigator />
       </NavigationContainer>
     </Provider>
   )

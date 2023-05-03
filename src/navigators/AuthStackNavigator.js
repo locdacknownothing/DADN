@@ -7,6 +7,7 @@ import {
   RegisterScreen,
   ResetPasswordScreen,
   StatisticDetail,
+  EmployeeInfo,
 } from '../screens'
 import DrawerNavigator from './DrawerNavigator';
 
@@ -29,6 +30,14 @@ export default function AuthStackNavigator() {
         options={{
           headerShown: true,
           title: "Biểu đồ thống kê",
+        }}
+      />
+      <Stack.Screen
+        name={"EmployeeInfo"}
+        component={EmployeeInfo}
+        options={{
+          headerShown: true,
+          title: "Thông tin nhân viên",
         }}
       />
       {/* <Stack.Screen
