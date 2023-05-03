@@ -10,14 +10,13 @@ import { theme } from "../../core/theme";
 import { getDateArray } from "../../helpers/getDate";
 import { LineChart } from "react-native-chart-kit";
 
-export default function StatisticDetail({ navigation, route }) {
-  const env = ["Độ ẩm", "Nhiệt độ", "Độ sáng", "Tiếng ồn"];
-  const unit = ["%", "°C", "lux", "dB"];
-  const { itemId } = route.params;
-  const timestamp = new Date();
-  // const dateArray = getDateArray(timestamp);
+const env = ["Độ ẩm", "Nhiệt độ", "Độ sáng", "Tiếng ồn"];
+const unit = ["%", "°C", "lux", "dB"];
+// const timestamp = new Date();
+// const dateArray = getDateArray(timestamp);
 
-  const statusValues = ["45.6", "26.9", "27", "10"];
+export default function StatisticDetail({ navigation, route }) {
+  const { itemId } = route.params;
 
   const data = {
     labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
@@ -27,8 +26,14 @@ export default function StatisticDetail({ navigation, route }) {
         color: (opacity = 1) => `rgba(77, 169, 255, ${opacity})`,
       },
     ],
-    legend: [env[itemId]],
+    legend: [env[itemId] + '(' + unit[itemId] + ')'],
   };
+
+  const stats = data.datasets[0].data;
+  const sum_ = stats.reduce((acc, val) => acc + val, 0);
+  const avg_ = sum_ / stats.length;
+  const min_ = Math.min(...stats);
+  const max_ = Math.max(...stats);
 
   return (
     <View style={{ backgroundColor: "#fff", height: "100%" }}>
@@ -81,7 +86,7 @@ export default function StatisticDetail({ navigation, route }) {
           >
             <Text style={styles.statusName}>Hiện tại</Text>
             <View style={styles.statusCircle}>
-              <Text style={styles.statusValue}>{"hi"}{unit[itemId]}</Text>
+              <Text style={styles.statusValue}>{stats[stats.length - 1]}{unit[itemId]}</Text>
             </View>
           </View>
           <View
@@ -93,7 +98,7 @@ export default function StatisticDetail({ navigation, route }) {
           >
             <Text style={styles.statusName}>Trung bình</Text>
             <View style={styles.statusCircle}>
-              <Text style={styles.statusValue}>{"hi"}{unit[itemId]}</Text>
+              <Text style={styles.statusValue}>{avg_}{unit[itemId]}</Text>
             </View>
           </View>
         </View>
@@ -107,7 +112,7 @@ export default function StatisticDetail({ navigation, route }) {
           >
             <Text style={styles.statusName}>Cao nhất</Text>
             <View style={styles.statusCircle}>
-              <Text style={styles.statusValue}>{"hi"}{unit[itemId]}</Text>
+              <Text style={styles.statusValue}>{max_}{unit[itemId]}</Text>
             </View>
           </View>
           <View
@@ -119,7 +124,7 @@ export default function StatisticDetail({ navigation, route }) {
           >
             <Text style={styles.statusName}>Thấp nhất</Text>
             <View style={styles.statusCircle}>
-              <Text style={styles.statusValue}>{"hi"}{unit[itemId]}</Text>
+              <Text style={styles.statusValue}>{min_}{unit[itemId]}</Text>
             </View>
           </View>
         </View>
