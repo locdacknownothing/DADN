@@ -17,6 +17,8 @@ const unit = ["%", "°C", "lux", "dB"];
 
 export default function StatisticDetail({ navigation, route }) {
   const { itemId } = route.params;
+  const data_link = "https://io.adafruit.com/api/v2/Vyvy0812/feeds/pasic-smart-office.temperature/data/"
+  // fetch(data_link)
 
   const data = {
     labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
