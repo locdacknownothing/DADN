@@ -41,7 +41,7 @@ export default function HomeScreen({navigation}) {
         // setLightValue(data5.last_value);
         // setHallwaysLightValue(data6.last_value);
         // setFanValue(data7.last_value);
-        // console.log("UPDATE");
+        console.log("UPDATE");
       }
       catch(err){
         console.log(err);
@@ -51,46 +51,7 @@ export default function HomeScreen({navigation}) {
     setInterval(() => {
       myFunc();
     }, 10000);
-
-    // setInterval(() => {
-      // Promise.all([
-      //   fetch(temp_url),
-      //   fetch(humi_url),
-      //   fetch(brightness_url),
-      //   fetch(noise_url),
-      //   // fetch(light_url),
-      //   // fetch(hallways_light_url),
-      //   // fetch(fan_url)
-      // ])
-      // .then(([res1, 
-      //   res2, 
-      //   res3, 
-      //   res4, 
-      //   // res5, 
-      //   // res6, 
-      //   // res7
-      // ]) =>
-      //   Promise.all([res1.json(), 
-      //     res2.json(), 
-      //     res3.json(), 
-      //     res4.json(), 
-      //     // res5.json(), 
-      //     // res6.json(), 
-      //     // res7.json()
-      //   ])
-      // )
-      // .then(([data1, data2, data3, data4, data5, data6, data7]) => {
-      //   setTempValue(data1.last_value);
-      //   setHumiValue(data2.last_value);
-      //   setBrightValue(data3.last_value);
-      //   setNoiseValue(data4.last_value);
-      //   // setLightValue(data5.last_value);
-      //   // setHallwaysLightValue(data6.last_value);
-      //   // setFanValue(data7.last_value);
-      //   console.log("UPDATE");
-      // })
-    // }, 20000)
-  })
+  }, [])
 
   return (
     <View style={{backgroundColor: "#fff"}}>
