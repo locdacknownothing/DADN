@@ -31,40 +31,25 @@ export default function StatisticScreen({ navigation }) {
   const [humiValue, setHumiValue] = useState(0);
   const [brightValue, setBrightValue] = useState(0);
   const [noiseValue, setNoiseValue] = useState(0);
-  const RESET_TIME = 20000;
+  const RESET_TIME = 10000;
 
   useEffect(() => {
+    const fetchFunction = async() => {
+      try {
+        await Promise.all([fetch(temp_url).then(res1 => res1.json()).then(data1 => setTempValue(data1.last_value)),
+                          fetch(humi_url).then(res2 => res2.json()).then(data2 => setHumiValue(data2.last_value)),
+                          fetch(brightness_url).then(res3 => res3.json()).then(data3 => setBrightValue(data3.last_value)),
+                          fetch(noise_url).then(res4 => res4.json()).then(data4 => setNoiseValue(data4.last_value))]);
+      }
+      catch(err){
+        console.log(err);
+      };
+    };
+    fetchFunction();
     setInterval(() => {
-      Promise.all([
-        fetch(temp_url),
-        fetch(humi_url),
-        fetch(brightness_url),
-        fetch(noise_url),
-      ])
-      .then(([
-        res1, 
-        res2, 
-        res3, 
-        res4,
-      ]) =>
-        Promise.all([
-          res1.json(), 
-          res2.json(), 
-          res3.json(), 
-          res4.json(),
-        ])
-      )
-      .then(([data1, data2, data3, data4]) => {
-        setTempValue(data1.last_value);
-        setHumiValue(data2.last_value);
-        setBrightValue(data3.last_value);
-        setNoiseValue(data4.last_value);
-      })
-      .catch(error => {
-        console.error(error.message);
-      });
-    }, RESET_TIME)
-  })
+      fetchFunction();
+    }, RESET_TIME);
+  }, [])
 
   const evals = evaluateEnvironment(humiValue, tempValue, brightValue, noiseValue);
 

@@ -1,41 +1,106 @@
 import React, { useState, useEffect } from "react";
-import {
-  StyleSheet,
-  View,
-  Text,
-  Dimensions,
-} from "react-native";
+import { StyleSheet, View, Text, Dimensions } from "react-native";
 import { Icon } from "react-native-elements";
 import { theme } from "../../core/theme";
 import { getDateArray } from "../../helpers/getDate";
 import { LineChart } from "react-native-chart-kit";
+import Background from "../../components/Background";
+import Header from "../../components/Header";
 
 const env = ["Độ ẩm", "Nhiệt độ", "Độ sáng", "Tiếng ồn"];
 const unit = ["%", "°C", "lux", "dB"];
 // const timestamp = new Date();
 // const dateArray = getDateArray(timestamp);
 
+const getValuesFromJson = (data) => {
+  if (data === undefined) {
+    console.log(data);
+    return [];
+  }
+
+  // data = JSON.parse(data).map(obj => ({...obj}));
+  data_values = [];
+  for (let i = 0; i < data.length; i++) {
+    // console.log(data[i].value);
+    data_values.push(data[i].value);
+  }
+
+  return data_values;
+};
+
+function waitForVariable(variableName) {
+  return new Promise((resolve) => {
+    const intervalId = setInterval(() => {
+      if (window[variableName] !== undefined) {
+        clearInterval(intervalId);
+        resolve(window[variableName]);
+      }
+    }, 1000);
+  });
+}
+
 export default function StatisticDetail({ navigation, route }) {
   const { itemId } = route.params;
-  const data_link = "https://io.adafruit.com/api/v2/Vyvy0812/feeds/pasic-smart-office.temperature/data/"
-  // fetch(data_link)
+  const url_type = ["humidity", "temperature", "brightness", "noise"];
+  const data_url =
+    "https://io.adafruit.com/api/v2/Vyvy0812/feeds/pasic-smart-office." +
+    url_type[itemId] +
+    "/data/";
+
+  const [value, setValue] = useState([0]);
+  const RESET_TIME = 10000;
+
+  useEffect(() => {
+    const fetchFunction = async () => {
+      try {
+        const response = await fetch(data_url);
+        const json = await response.json();
+
+        setValue(getValuesFromJson(json));
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    fetchFunction();
+    setInterval(() => {
+      fetchFunction();
+    }, RESET_TIME);
+  }, []);
+
+  if (!value) {
+    return (
+      <Background>
+        <Header>Đang tải dữ liệu ...</Header>
+      </Background>
+    );
+  }
+
+  const stats = [];
+  const labels = [];
+  for (let i = 0; i < value.length; i++) {
+    if (i % 10 === 0 || i === 99) {
+      stats.push(value[i]);
+      labels.push(i);
+    }
+  }
 
   const data = {
-    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+    labels: labels,
     datasets: [
       {
-        data: [20, 45, 28, 80, 99, 43],
+        data: stats,
         color: (opacity = 1) => `rgba(77, 169, 255, ${opacity})`,
       },
     ],
-    legend: [env[itemId] + '(' + unit[itemId] + ')'],
+    legend: [env[itemId] + "(" + unit[itemId] + ")"],
   };
-
-  const stats = data.datasets[0].data;
-  const sum_ = stats.reduce((acc, val) => acc + val, 0);
-  const avg_ = sum_ / stats.length;
-  const min_ = Math.min(...stats);
-  const max_ = Math.max(...stats);
+  const present = value[0];
+  const avg_ = value.reduce((acc, val) => acc + parseInt(val), 0) / 100;
+  // const min_ = 0;
+  // const max_ = 0;
+  const min_ = Math.min(...value);
+  const max_ = Math.max(...value);
 
   return (
     <View style={{ backgroundColor: "#fff", height: "100%" }}>
@@ -50,10 +115,16 @@ export default function StatisticDetail({ navigation, route }) {
           </TouchableOpacity>
         </View>
       </View> */}
+      {/* <Text>{value}{"\n"}{value_}</Text> */}
       <View style={styles.sectionContainer}>
         <Text style={styles.sectionText}>Thống kê {env[itemId]}</Text>
-        <View style={{flex: 1, justifyContent: "flex-end"}}>
-          <Icon name="stats-chart-outline" type="ionicon" size={25} color="#000" />
+        <View style={{ flex: 1, justifyContent: "flex-end" }}>
+          <Icon
+            name="stats-chart-outline"
+            type="ionicon"
+            size={25}
+            color="#000"
+          />
         </View>
       </View>
 
@@ -88,7 +159,10 @@ export default function StatisticDetail({ navigation, route }) {
           >
             <Text style={styles.statusName}>Hiện tại</Text>
             <View style={styles.statusCircle}>
-              <Text style={styles.statusValue}>{stats[stats.length - 1]}{unit[itemId]}</Text>
+              <Text style={styles.statusValue}>
+                {present}
+                {unit[itemId]}
+              </Text>
             </View>
           </View>
           <View
@@ -100,7 +174,10 @@ export default function StatisticDetail({ navigation, route }) {
           >
             <Text style={styles.statusName}>Trung bình</Text>
             <View style={styles.statusCircle}>
-              <Text style={styles.statusValue}>{avg_}{unit[itemId]}</Text>
+              <Text style={styles.statusValue}>
+                {avg_}
+                {unit[itemId]}
+              </Text>
             </View>
           </View>
         </View>
@@ -114,7 +191,10 @@ export default function StatisticDetail({ navigation, route }) {
           >
             <Text style={styles.statusName}>Cao nhất</Text>
             <View style={styles.statusCircle}>
-              <Text style={styles.statusValue}>{max_}{unit[itemId]}</Text>
+              <Text style={styles.statusValue}>
+                {max_}
+                {unit[itemId]}
+              </Text>
             </View>
           </View>
           <View
@@ -126,7 +206,10 @@ export default function StatisticDetail({ navigation, route }) {
           >
             <Text style={styles.statusName}>Thấp nhất</Text>
             <View style={styles.statusCircle}>
-              <Text style={styles.statusValue}>{min_}{unit[itemId]}</Text>
+              <Text style={styles.statusValue}>
+                {min_}
+                {unit[itemId]}
+              </Text>
             </View>
           </View>
         </View>
@@ -136,23 +219,6 @@ export default function StatisticDetail({ navigation, route }) {
 }
 
 const styles = StyleSheet.create({
-  // header: {
-  //   marginTop: 50,
-  //   flexDirection: "row",
-  //   alignItems: "center",
-  //   marginHorizontal: "10%",
-  //   justifyContent: "space-around",
-  //   width: "100%",
-  // },
-  // headerText: {
-  //   fontSize: 20,
-  //   fontWeight: "500",
-  //   textAlign: "center",
-  // },
-  // headerBack: {
-  //   alignItems: "flex-end",
-  //   marginRight: "5%",
-  // },
   sectionContainer: {
     flexDirection: "row",
     margin: "5%",
