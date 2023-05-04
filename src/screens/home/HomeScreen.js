@@ -124,7 +124,7 @@ export default function HomeScreen({ navigation, route }) {
               </Text>
               <View>
                 <Icon name="chevron-right" type="AntDesign" color='#fff' size={30} containerStyle={{marginLeft: 120}}
-                  onPress={() => navigation.navigate('Quản lý thiết bị')}/>
+                  onPress={() => navigation.navigate('Quản lý thiết bị', {id: route.params.id, name: route.params.name, role: route.params.role})}/>
               </View>
             </View>
 

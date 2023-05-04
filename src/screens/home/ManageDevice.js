@@ -8,20 +8,21 @@ import { StyleSheet, View, Text, ScrollView, Switch } from "react-native";
 import { Avatar, Icon } from "react-native-elements";
 import { Button } from "react-native-paper";
 import { theme } from "../../core/theme";
+import { Image } from "react-native-elements";
 
-const NUM_DEVICES = 10
+const NUM_DEVICES = 2
 
 const devices = [
-  { id: "1", name: "Device 1" },
-  { id: "2", name: "Device 2" },
-  { id: "3", name: "Device 3" },
+  { id: "1", name: "Đèn văn phòng" },
+  { id: "2", name: "Đèn hành lang" },
+  { id: "3", name: "Quạt văn phòng" }
   // { id: "4", name: "Device 4" },
   // { id: "5", name: "Device 5" },
   // { id: "6", name: "Device 6" },
   // { id: "7", name: "Device 7" },
-  { id: "8", name: "Device 8" },
-  { id: "9", name: "Device 9" },
-  { id: "10", name: "Device 10" },
+  // { id: "8", name: "Device 8" },
+  // { id: "9", name: "Device 9" },
+  // { id: "10", name: "Device 10" },
 ];
 
 // const Devices = () => {
@@ -36,37 +37,155 @@ const light_url = "https://io.adafruit.com/api/v2/Vyvy0812/feeds/pasic-smart-off
 const hallways_light_url = "https://io.adafruit.com/api/v2/Vyvy0812/feeds/pasic-smart-office.hallways-light";
 const fan_url = "https://io.adafruit.com/api/v2/Vyvy0812/feeds/pasic-smart-office.fan";
 
-export default function ManageDevice({ navigation }) {
-  const [isEnabled, setIsEnabled] = useState(Array.from({ length: NUM_DEVICES }, () => false));
-  
-  const toggleSwitch = (index) => {
-    const newSwitches = [...isEnabled];
-    newSwitches[index] = !newSwitches[index];
-    setIsEnabled(newSwitches);
+export default function ManageDevice({ navigation, route }) {
+  console.log(route)
+  let name = route.params.name;
+  let role = route.params.role;
+  // const [isEnabled, setIsEnabled] = useState(Array.from({ length: NUM_DEVICES }, () => false));
+  const [fanIconURL, setFanURL] = useState(require('../../assets/fanspeed/level0.png'));
+  const [light1, setLight1] = useState(false);
+  const [light2, setLight2] = useState(false);
+  let isEnabled = [light1, light2];
+  const [fanSpeed, setSpeed] = useState(0);
+  const toggleSwitch = async (index) => {
+    if (index === 0){
+      let new_light1 = !light1;
+      setLight1(!light1);
+      const data = {value: (new_light1*1).toString()};
+      const options = {
+        method: 'POST',
+        headers: {
+          'X-AIO-KEY': 'aio_cNnb89tpUEvikYWa3VaHtrPdPbeD',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+      };
+
+      const response = await fetch('https://io.adafruit.com/api/v2/Vyvy0812/feeds/pasic-smart-office.offices-light/data/', options)
+      const reply = await response.json();
+      console.log(reply)
+    }
+    if (index === 1){
+      let new_light2 = !light2;
+      setLight2(!light2);
+      const data = {value: (new_light2*1).toString()};
+      const options = {
+        method: 'POST',
+        headers: {
+          'X-AIO-KEY': 'aio_cNnb89tpUEvikYWa3VaHtrPdPbeD',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+      };
+
+      const response = await fetch('https://io.adafruit.com/api/v2/Vyvy0812/feeds/pasic-smart-office.hallways-light/data/', options)
+      const reply = await response.json();
+      console.log(reply)
+    }
+    // const newSwitches = [...isEnabled];
+    // newSwitches[index] = !newSwitches[index];
+    // setIsEnabled(newSwitches);
   }
-  
+  const changeFanSpeed = async () => {
+    let newFanSpeed = fanSpeed + 25;
+    newFanSpeed = newFanSpeed%125;
+    setSpeed(newFanSpeed);
+    console.log(newFanSpeed);
+
+    if (newFanSpeed === 0){
+      setFanURL(require('../../assets/fanspeed/level0.png'));
+    }
+    if (newFanSpeed === 25){
+      setFanURL(require('../../assets/fanspeed/level1.png'));
+    }
+    if (newFanSpeed === 50){
+      setFanURL(require('../../assets/fanspeed/level2.png'));
+    }
+    if (newFanSpeed === 75){
+      setFanURL(require('../../assets/fanspeed/level3.png'));
+    }
+    if (newFanSpeed === 100){
+      setFanURL(require('../../assets/fanspeed/level4.png'));
+    }
+
+    const data = {value: (newFanSpeed).toString()};
+    const options = {
+      method: 'POST',
+      headers: {
+        'X-AIO-KEY': 'aio_cNnb89tpUEvikYWa3VaHtrPdPbeD',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data)
+    };
+
+    const response = await fetch('https://io.adafruit.com/api/v2/Vyvy0812/feeds/pasic-smart-office.fan/data/', options)
+    const reply = await response.json();
+    console.log(reply)
+  }
   const [lightValue, setLightValue] = useState(0);
   const [hallwaysLightValue, setHallwaysLightValue] = useState(0);
-  const [fanValue, setFanValue] = useState(0);
 
   useEffect(() => {
     const myFunc = async() => {
       try {
-        let [data1, data2, data3] = await Promise.all([fetch(light_url).then(res1 => res1.json()).then(data1 => setLightValue(data1.last_value)),
-                                                              fetch(hallways_light_url).then(res2 => res2.json()).then(data2 => setHallwaysLightValue(data2.last_value)),
-                                                              fetch(fan_url).then(res3 => res3.json()).then(data3 => setFanValue(data3.last_value))]);
+        const [res1, res2, res3] = await Promise.all([fetch(light_url), fetch(hallways_light_url), fetch(fan_url)]);
+        const [json1, json2, json3] = await Promise.all([res1.json(), res2.json(), res3.json()]);
+
+        const setValues = async() => {
+          setLightValue(json1.last_value);
+          setHallwaysLightValue(json2.last_value);
+          setSpeed(parseInt(json3.last_value, 10));
+        }
+
+        setValues();
+        if (!json1.last_value*light1 + json1.last_value*!light1){
+          // console.log("Different 1");
+          setLight1(!light1);
+          // const newSwitches = [...isEnabled];
+          // newSwitches[0] = !newSwitches[0];
+          // setIsEnabled(newSwitches);
+        }
+        else{
+          // console.log("Same")
+        }
+        
+        if (!json2.last_value*light2 + json2.last_value*!light2){
+          // console.log("Different 2");
+          setLight2(!light2);
+        }
+        else{
+          // console.log("Same")
+        }
+        
+        if (json3.last_value == '0'){
+          setFanURL(require('../../assets/fanspeed/level0.png'))
+        }
+        else if (json3.last_value == '25'){
+          setFanURL(require('../../assets/fanspeed/level1.png'))
+        }
+        else if (json3.last_value == '50'){
+          setFanURL(require('../../assets/fanspeed/level2.png'))
+        }
+        else if (json3.last_value == '75'){
+          setFanURL(require('../../assets/fanspeed/level3.png'))
+        }
+        else if (json3.last_value == '100'){
+          setFanURL(require('../../assets/fanspeed/level4.png'))
+        }
+
         // console.log("UPDATE");
       }
       catch(err){
-        console.log(err);
+        // console.log(err);
       };
     };
     myFunc();
-    console.log(lightValue);
-    console.log(hallwaysLightValue);
-    console.log(fanValue);
+    // console.log(lightValue);
+    // console.log(hallwaysLightValue);
+    // console.log(fanValue);
     setInterval(() => {
       myFunc();
+      // console.log(isEnabled);
     }, 10000);
   }, [])
 
@@ -84,8 +203,11 @@ export default function ManageDevice({ navigation }) {
               }}
             />
           </View>
-          <Text style={styles.name}>Trương Nguyễn Khôi Nguyên</Text>
-          <Text style={styles.role}>Employee</Text>
+          <Text style={styles.name}>{name}</Text>
+          {
+            role ? (<Text style={styles.role}>Manager</Text>) : (<Text style={styles.role}>Employee</Text>)
+          }
+          
         </View>
       </View>
 
@@ -98,7 +220,7 @@ export default function ManageDevice({ navigation }) {
         </View>
         <View style={styles.status}>
           <ScrollView style={{ height: 3 * 50 }}>
-            {devices.slice(0, 5).map((item) => (
+            {devices.slice(0, 2).map((item) => (
               <View key={item.id} style={styles.itemContainer}>
                 <Text style={styles.itemName}>{item.name}</Text>
                 <Switch
@@ -122,19 +244,20 @@ export default function ManageDevice({ navigation }) {
         </View>
         <View style={styles.status}>
           <ScrollView style={{ height: 3 * 50 }}>
-            {devices.slice(5, 10).map((item) => (
-              <View key={item.id} style={styles.itemContainer}>
-                <Text style={styles.itemName}>{item.name}</Text>
-                <Switch
-                  key={item.id - 1}
-                  trackColor={{ false: " #e6e5e6 ", true: "#66ff99" }}
-                  thumbColor={isEnabled ? "#ffffff" : "#cccccc"}
-                  onValueChange={() => toggleSwitch(item.id - 1)}
-                  value={isEnabled[item.id - 1]}
-                  style={styles.itemSwitch}
-                />
+            <View key={3} style={styles.itemContainer}>
+              <Text style={styles.itemName}>Quạt văn phòng</Text>
+              <View style={{flex: 1, alignItems: 'flex-end'}}>
+                <Image source={fanIconURL} onPress={() => changeFanSpeed()} style={{width: 25, height: 27, marginRight: 15, marginTop: 7}}/>
               </View>
-            ))}
+              {/* <Switch
+                key={3}
+                trackColor={{ false: " #e6e5e6 ", true: "#66ff99" }}
+                thumbColor={isEnabled ? "#ffffff" : "#cccccc"}
+                onValueChange={() => toggleSwitch(3)}
+                value={isEnabled[item.id - 1]}
+                style={styles.itemSwitch}
+              /> */}
+            </View>
           </ScrollView>
         </View>
       </View>
