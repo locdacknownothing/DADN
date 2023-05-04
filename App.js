@@ -5,7 +5,7 @@ import { NavigationContainer } from '@react-navigation/native'
 import { theme } from './src/core/theme'
 import AuthStackNavigator from './src/navigators/AuthStackNavigator'
 // import DrawerNavigator from './src/navigators/DrawerNavigator'
-import { EmployeeList, StatisticScreen, EmployeeInfo, TimesheetScreen } from './src/screens';
+import { EmployeeList, StatisticScreen, EmployeeInfo, TimesheetScreen, ManageDevice } from './src/screens';
 
 export default function App() {
   return (
@@ -15,6 +15,7 @@ export default function App() {
         {/* <EmployeeList/> */}
         {/* <EmployeeInfo/> */}
         {/* <TimesheetScreen/> */}
+        {/* <ManageDevice/> */}
       </NavigationContainer>
     </Provider>
   )

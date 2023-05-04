@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import Background from "../../components/Background";
 import Logo from "../../components/Logo";
 import Header from "../../components/Header";
@@ -32,6 +32,10 @@ const devices = [
 //   );
 // };
 
+const light_url = "https://io.adafruit.com/api/v2/Vyvy0812/feeds/pasic-smart-office.offices-light";
+const hallways_light_url = "https://io.adafruit.com/api/v2/Vyvy0812/feeds/pasic-smart-office.hallways-light";
+const fan_url = "https://io.adafruit.com/api/v2/Vyvy0812/feeds/pasic-smart-office.fan";
+
 export default function ManageDevice({ navigation }) {
   const [isEnabled, setIsEnabled] = useState(Array.from({ length: NUM_DEVICES }, () => false));
   
@@ -40,6 +44,31 @@ export default function ManageDevice({ navigation }) {
     newSwitches[index] = !newSwitches[index];
     setIsEnabled(newSwitches);
   }
+  
+  const [lightValue, setLightValue] = useState(0);
+  const [hallwaysLightValue, setHallwaysLightValue] = useState(0);
+  const [fanValue, setFanValue] = useState(0);
+
+  useEffect(() => {
+    const myFunc = async() => {
+      try {
+        let [data1, data2, data3] = await Promise.all([fetch(light_url).then(res1 => res1.json()).then(data1 => setLightValue(data1.last_value)),
+                                                              fetch(hallways_light_url).then(res2 => res2.json()).then(data2 => setHallwaysLightValue(data2.last_value)),
+                                                              fetch(fan_url).then(res3 => res3.json()).then(data3 => setFanValue(data3.last_value))]);
+        // console.log("UPDATE");
+      }
+      catch(err){
+        console.log(err);
+      };
+    };
+    myFunc();
+    console.log(lightValue);
+    console.log(hallwaysLightValue);
+    console.log(fanValue);
+    setInterval(() => {
+      myFunc();
+    }, 10000);
+  }, [])
 
   return (
     <View style={{ backgroundColor: "#fff" }}>

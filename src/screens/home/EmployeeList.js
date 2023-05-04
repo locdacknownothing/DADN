@@ -7,8 +7,9 @@ import moment from "moment";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Avatar, SearchBar, Icon } from "react-native-elements";
 import { json } from "react-router-dom";
-import { ColorSpace } from "react-native-reanimated";
+import { ColorSpace, set } from "react-native-reanimated";
 import { CurrentRenderContext } from "@react-navigation/native";
+import AuthStackNavigator from "../../navigators/AuthStackNavigator";
 
 export default function EmployeeList({ navigation }) {
   const [cur_day, updateCurr_day] = useState(new Date());
@@ -39,13 +40,32 @@ export default function EmployeeList({ navigation }) {
   };
 
   // Take first employee information
+  // useEffect(() => {
+  //   fetch(getEmpURL)
+  //   .then((data) => data.json())
+  //   .then((json) => setDatasource(json))
+  //   .catch((error) => console.log(error))
+  //   .finally(() => setLoading(false));
+  // }, []);
+
   useEffect(() => {
-    fetch(getEmpURL)
-    .then((data) => data.json())
-    .then((json) => setDatasource(json))
-    .catch((error) => console.log(error))
-    .finally(() => setLoading(false));
-  }, []);
+    const fetchFunction = async () => {
+      try{
+        const response = await fetch(getEmpURL);
+        const json = await response.json();
+
+        setDatasource(json);
+        setLoading(false);
+      } catch(err){
+        console.log(err)
+      }
+    };
+    fetchFunction();
+    setInterval(() => {
+      fetchFunction();
+    }, 10000)
+
+  }, [])
 
   console.log(moment.unix(1682907239).format("DD/MM/YYYY h:mm:ss a"));
 
@@ -221,8 +241,7 @@ export default function EmployeeList({ navigation }) {
       </View>
       <View>
         <ScrollView style={styles.scrollView}>
-              {[processEmpInfo(),
-                loading ? (<Text>Loading .....</Text>) : (
+              {loading ? (<Text>Loading .....</Text>) : (
                   realData.map((empInfo) => (
                     <View style={styles.empHolder}>
                       <View style={{ flexDirection: "row" }}>
@@ -264,7 +283,7 @@ export default function EmployeeList({ navigation }) {
                     </View>
                   ))
                 )
-                ]
+                
               }
         </ScrollView>
       </View>

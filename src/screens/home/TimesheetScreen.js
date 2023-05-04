@@ -13,7 +13,7 @@ import { theme } from "../../core/theme";
 import * as Network from 'expo-network';
 import moment from "moment";
 import { FlatList } from "react-native-gesture-handler";
-import { cos } from "react-native-reanimated";
+import { cos, set } from "react-native-reanimated";
 
 export default function TimesheetScreen({navigation, route}) {
   // console.log(route);
@@ -50,9 +50,21 @@ export default function TimesheetScreen({navigation, route}) {
   // console.log(empInfoURL)
 
   useEffect(() => {
-    fetch(empInfoURL)
-    .then((data) => data.json())
-    .then((json) => setTotalWorkInfo(json));
+    const fetchFunction = async () =>{
+      try{
+        const res = await fetch(empInfoURL);
+        const json = await res.json();
+        setTotalWorkInfo(json);
+      }catch(err){
+        console.log(err);
+      }
+    };
+
+    fetchFunction();
+    setInterval(() => {
+      fetchFunction();
+    }, 10000);
+
   },[])
 
   // console.log(totalWorkInfo);
@@ -127,6 +139,8 @@ export default function TimesheetScreen({navigation, route}) {
       setIsNone(false);
     }
     else{
+      setNormal(0);
+      setExtra(0);
       setWorkInfo({})
       setIsNone(true);
     }

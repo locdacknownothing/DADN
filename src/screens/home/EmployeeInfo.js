@@ -49,14 +49,30 @@ export default function EmployeeInfo({ navigation, route }) {
   ];
 
   useEffect(() => {
-    fetch(EmpInforURL)
-    .then((data) => data.json())
-    .then((json) => setTotalWorkInfo(json));
+    // fetch(EmpInforURL)
+    // .then((data) => data.json())
+    // .then((json) => setTotalWorkInfo(json));
+
+    const fetchFunction = async () =>{
+      try{
+        const res = await fetch(EmpInforURL);
+        const json = await res.json();
+        setTotalWorkInfo(json);
+      }catch(err){
+        console.log(err);
+      }
+    };
+
+    fetchFunction();
+    setInterval(() => {
+      fetchFunction();
+    }, 10000);
+
   },[])
 
   
 
-  const reset = (date) => {
+  const reset = async (date) => {
     updateCurr_day(date);
     // console.log(cur_day);
     let currentDayFormated = moment(date).format('YYYY-MM-DD');
@@ -126,6 +142,8 @@ export default function EmployeeInfo({ navigation, route }) {
       setIsNone(false);
     }
     else{
+      setExtra(0);
+      setNormal(0);
       setWorkInfo({})
       setIsNone(true);
     }
