@@ -37,7 +37,7 @@ export default function AuthStackNavigator() {
         component={EmployeeInfo}
         options={{
           headerShown: true,
-          title: "Thông tin nhân viên",
+          title: "Bảng chấm công nhân viên",
         }}
       />
       {/* <Stack.Screen

@@ -2,10 +2,13 @@ import React, { useEffect, useState } from "react";
 import Background from "../../components/Background";
 import Header from "../../components/Header";
 import CalendarStrip from "react-native-calendar-strip";
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, View, Text, ScrollView } from "react-native";
 import moment from "moment";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Avatar, SearchBar, Icon } from "react-native-elements";
+import { json } from "react-router-dom";
+import { ColorSpace } from "react-native-reanimated";
+import { CurrentRenderContext } from "@react-navigation/native";
 
 export default function EmployeeList({ navigation }) {
   const [cur_day, updateCurr_day] = useState(new Date());
@@ -22,82 +25,157 @@ export default function EmployeeList({ navigation }) {
   );
   const [start_work_time, updateStartWorkTime] = useState("9:00");
   const [end_work_time, updateEndWorkTime] = useState("Hiện tại");
-  const [empInfor, updateEmpInfor] = useState([]);
-  const getEmpURL = "http://192.168.1.4:5000/attcheck/";
-  const tempURL =
-    "https://io.adafruit.com/api/v2/Vyvy0812/feeds/pasic-smart-office.temperature/data";
-  const tempURL2 = "https://reactnative.dev/movies.json";
-  const tempURL3 = "http://127.0.0.1:5000/login";
+  // const [empInfor, updateEmpInfor] = useState([]);
+  const getEmpURL = "http://192.168.31.17:5000/attcheck/";
 
-  // fetch(getEmpURL).then(data => data.json()).then(res => updateEmpInfor(res));
-
-  // var request = new XMLHttpRequest();
-  // request.onreadystatechange = e => {
-  //   if (request.readyState !== 4) {
-  //     return;
-  //   }
-
-  //   if (request.status === 200) {
-  //     console.log('success');
-  //     updateEmpInfor(request.responseText);
-  //   } else {
-  //     console.warn('error');
-  //   }
-  // };
-
-  // request.open('GET', getEmpURL);
-  // request.send();
-
-  // const req = new Request('https://io.adafruit.com/api/v2/Vyvy0812/feeds/pasic-smart-office.temperature/data', {
-  //   method: "POST",
-  //   headers: {
-  //     Accept: 'application/json',
-  //     'Content-Type': 'application/json',
-  //   },
-  //   body: JSON.stringify({
-  //     "id": "string",
-  //     "value": "string",
-  //     "feed_id": 0,
-  //     "feed_key": "string",
-  //     "created_at": "datetime",
-  //     "location": {},
-  //     "lat": 0.0,
-  //     "lon": 0.0,
-  //     "ele": 0.0,
-  //     "created_epoch": 0,
-  //     "expiration": "datetime"
-  //   }),
-
-  // });
-  // fetch(getEmpURL).then(data => data.json()).then(data => updateEmpInfor(data));
-  // Take first employee information
-
-  const myFunc = () => {
-    try {
-      fetch(getEmpURL)
-        .then((data) => data.json())
-        .then((data) => {
-          updateEmpName(data[1].name);
-          updateStartWorkTime(data[1].check_in);
-          updateEndWorkTime(data[1].check_out);
-        });
-    } catch (err) {
-      console.log(err);
+  const [dataSource, setDatasource] = useState([]);
+  const [loading, setLoading] = useState(true);
+ 
+  const filterEmpArr = (json) => {
+    let processedArr = [];
+    for (let i = 0; i < json.length; i++){
+      ;
     }
   };
+
+  // Take first employee information
   useEffect(() => {
-    myFunc();
+    fetch(getEmpURL)
+    .then((data) => data.json())
+    .then((json) => setDatasource(json))
+    .catch((error) => console.log(error))
+    .finally(() => setLoading(false));
   }, []);
-  console.log(empName);
-  console.log(start_work_time);
-  console.log(end_work_time);
-  // updateEmpName(empInfor[0].name);
 
-  console.log(searchText);
+  console.log(moment.unix(1682907239).format("DD/MM/YYYY h:mm:ss a"));
 
-  const onPressInfo = (empId) => {
-    navigation.navigate("EmployeeInfo", { id: empId });
+  const onPressInfo = (empInfo) => {
+    navigation.navigate("EmployeeInfo", { id: empInfo.id, name: empInfo.name, day: cur_day });
   };
+
+  const [realData, setRealData] = useState([]);
+
+  const reset = (date) =>{
+    updateCurr_day(date);
+    // processEmpInfo();
+    setRealData(processEmpInfoRes(date));
+  };
+
+  const processEmpInfoRes = (day) => {
+    let newDataSource = [];
+    let workDate = {};
+    let empList = {};
+    for (let i = 0; i < dataSource.length; i++){
+      // Process the date
+      let day = moment.unix(dataSource[i].check_in).format('DD/MM/YYYY');
+      if (workDate.hasOwnProperty(day)){
+        workDate[day].push(dataSource[i]);
+      }
+      else{
+        workDate[day] = [dataSource[i]];
+      }
+
+      // Process employee information
+      let isExist = false;
+      // console.log(newDataSource)
+      for (let j = 0; j < newDataSource.length; j++){
+        if (newDataSource[j].id == dataSource[i].id){
+          isExist = true;
+          // console.log("exists");
+          break;
+        }
+      }
+      if (isExist) continue;
+      let newEle = {check_in: 0, check_out: 0, id: dataSource[i].id, name: dataSource[i].name};
+      empList[dataSource[i].id] = newEle;
+      newDataSource.push(newEle);
+
+    }
+    // console.log(newDataSource);
+    // console.log(workDate);
+    
+    let current_day = moment(day).format('DD/MM/YYYY');
+    if (workDate.hasOwnProperty(current_day)){
+      let curWorkDate = workDate[current_day];
+      for (let i = 0; i < curWorkDate.length; i++){
+        // console.log(curWorkDate[i])
+        empList[curWorkDate[i].id].check_in = curWorkDate[i].check_in;
+        empList[curWorkDate[i].id].check_out = curWorkDate[i].check_out;
+      }
+    }
+
+    let finalRes = [];
+    for (const key in empList){
+      if (empList[key].check_in != 0){
+        finalRes.push(empList[key])
+      }
+      else{
+        // empList[key].check_in = null;
+        // empList[key].check_out = null;
+        // finalRes.push(empList[key]);
+      }
+    }
+    // useEffect(() => setRealData(finalRes), []);
+    // console.log(empList);
+    return finalRes;
+  }
+
+  const processEmpInfo = () => {
+    let newDataSource = [];
+    let workDate = {};
+    let empList = {};
+    for (let i = 0; i < dataSource.length; i++){
+      // Process the date
+      let day = moment.unix(dataSource[i].check_in).format('DD/MM/YYYY');
+      if (workDate.hasOwnProperty(day)){
+        workDate[day].push(dataSource[i]);
+      }
+      else{
+        workDate[day] = [dataSource[i]];
+      }
+
+      // Process employee information
+      let isExist = false;
+      // console.log(newDataSource)
+      for (let j = 0; j < newDataSource.length; j++){
+        if (newDataSource[j].id == dataSource[i].id){
+          isExist = true;
+          // console.log("exists");
+          break;
+        }
+      }
+      if (isExist) continue;
+      let newEle = {check_in: 0, check_out: 0, id: dataSource[i].id, name: dataSource[i].name};
+      empList[dataSource[i].id] = newEle;
+      newDataSource.push(newEle);
+
+    }
+    // console.log(newDataSource);
+    // console.log(workDate);
+    
+    let current_day = moment(cur_day).format('DD/MM/YYYY');
+    if (workDate.hasOwnProperty(current_day)){
+      let curWorkDate = workDate[current_day];
+      for (let i = 0; i < curWorkDate.length; i++){
+        // console.log(curWorkDate[i])
+        empList[curWorkDate[i].id].check_in = curWorkDate[i].check_in;
+        empList[curWorkDate[i].id].check_out = curWorkDate[i].check_out;
+      }
+    }
+
+    let finalRes = [];
+    for (const key in empList){
+      if (empList[key].check_in != 0){
+        finalRes.push(empList[key])
+      }
+      else{
+        // empList[key].check_in = null;
+        // empList[key].check_out = null;
+        // finalRes.push(empList[key]);
+      }
+    }
+    useEffect(() => setRealData(finalRes), []);
+  }
 
   return (
     <View style={[styles.containerTemp]}>
@@ -114,11 +192,12 @@ export default function EmployeeList({ navigation }) {
           highlightDateNumberStyle={{ color: "white" }}
           highlightDateNameStyle={{ color: "white" }}
           onDateSelected={(date) => {
-            updateCurr_day(date);
+            reset(date);
+            // processEmpInfo;
           }}
           customDatesStyles={customDatesStyles}
         />
-        <View style={{ paddingLeft: 10, paddingRight: 10 }}>
+        <View style={{ paddingLeft: 10, paddingRight: 10, marginTop: 10, marginBottom: 5 }}>
           <SearchBar
             lightTheme
             placeholder="Search for member"
@@ -141,44 +220,53 @@ export default function EmployeeList({ navigation }) {
         </View>
       </View>
       <View>
-        <View style={styles.empHolder}>
-          <View style={{ flexDirection: "row" }}>
-            <View style={styles.avatarContainer}>
-              <Avatar
-                rounded
-                size={55}
-                source={{
-                  uri: avatarLink,
-                }}
-                containerStyle={{ backgroundColor: "#F64561" }}
-              ></Avatar>
-            </View>
-            <View style={styles.userInforHolder}>
-              <Text size={16}>{empName}</Text>
-              <Text size={12} style={{ color: "#8189B0", fontWeight: "bold" }}>
-                {moment.unix(start_work_time).format("h:mm:ss a")} -{" "}
-                {moment.unix(end_work_time).format("h:mm:ss a")}
-              </Text>
-            </View>
-            <View
-              style={{
-                alignSelf: "flex-end",
-                width: "10%",
-                height: 70,
-                justifyContent: "center",
-              }}
-            >
-              <Icon
-                size={30}
-                name="chevron-right"
-                type="feather"
-                color="#878997"
-                onPress={() => onPressInfo(0)}
-              />
-              {/* người dùng hiện tại có id là 0 */}
-            </View>
-          </View>
-        </View>
+        <ScrollView style={styles.scrollView}>
+              {[processEmpInfo(),
+                loading ? (<Text>Loading .....</Text>) : (
+                  realData.map((empInfo) => (
+                    <View style={styles.empHolder}>
+                      <View style={{ flexDirection: "row" }}>
+                        <View style={styles.avatarContainer}>
+                          <Avatar
+                            rounded
+                            size={55}
+                            source={{
+                              uri: avatarLink,
+                            }}
+                            containerStyle={{ backgroundColor: "#F64561" }}
+                          ></Avatar>
+                        </View>
+                        <View style={styles.userInforHolder}>
+                          <Text size={16}>{empInfo.name}</Text>
+                          <Text size={12} style={{ color: "#8189B0", fontWeight: "bold" }}>
+                            {moment.unix(empInfo.check_in).format("h:mm:ss a")} -{" "}
+                            {moment.unix(empInfo.check_out).format("h:mm:ss a")}
+                          </Text>
+                        </View>
+                        <View
+                          style={{
+                            alignSelf: "flex-end",
+                            width: "10%",
+                            height: 70,
+                            justifyContent: "center",
+                          }}
+                        >
+                          <Icon
+                            size={30}
+                            name="chevron-right"
+                            type="feather"
+                            color="#878997"
+                            onPress={() => onPressInfo(empInfo)}
+                          />
+                          {/* người dùng hiện tại có id là 0 */}
+                        </View>
+                      </View>
+                    </View>
+                  ))
+                )
+                ]
+              }
+        </ScrollView>
       </View>
     </View>
   );
@@ -195,13 +283,14 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   container: { flex: 1, height: 100 },
-  containerTemp: { marginTop: 50 },
+  containerTemp: { marginTop: 0, backgroundColor: '#fff', height: '100%' },
   empHolder: {
     height: 80,
     backgroundColor: "#f2f8ff",
-    margin: 20,
+    margin: 5,
     borderRadius: 20,
     justifyContent: "center",
   },
   userInforHolder: { alignSelf: "center", marginLeft: 10, width: "66%" },
+  scrollView: {backgroundColor: 'white', height: 570}
 });
