@@ -6,6 +6,7 @@ import {
   Modal,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  ScrollView
 } from "react-native";
 import { Icon } from "react-native-elements";
 import { theme } from "../../core/theme";
@@ -54,7 +55,7 @@ export default function StatisticScreen({ navigation }) {
   const evals = evaluateEnvironment(humiValue, tempValue, brightValue, noiseValue);
 
   return (
-    <View style={{ backgroundColor: "#fff", height: "100%" }}>
+    <ScrollView style={{ backgroundColor: "#fff", height: "100%" }}>
       <View style={styles.container}>
         <View style={styles.childContainer}>
           <Text style={styles.containerText}>Pasic Office</Text>
@@ -198,7 +199,7 @@ export default function StatisticScreen({ navigation }) {
           }}
         />
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
