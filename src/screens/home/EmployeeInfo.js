@@ -13,10 +13,14 @@ import * as Network from 'expo-network';
 import moment from "moment";
 
 export default function EmployeeInfo({ navigation, route }) {
-  console.log(route.params);
+  // console.log(route.params);
   let empInfo = route.params;
   let id = empInfo.id;
   let name = empInfo.name;
+  // const [pre_screen_day, setPreDay] = useState(empInfo.day);
+
+  const [cur_day, updateCurr_day] = useState(empInfo.day);
+  // console.log(pre_screen_day);
   // const { id } = route.params;
   // let id = 1;
   // let name = 'Khoi Nguyen';
@@ -36,11 +40,11 @@ export default function EmployeeInfo({ navigation, route }) {
   const [totalWorkInfo, setTotalWorkInfo] = useState([]);
   // let extrWorkHours = 0;
 
+  const [loading, setLoading] = useState(true);
+
   const [isNone, setIsNone] = useState(true);
 
   const [workInfo, setWorkInfo] = useState({});
-
-  const [cur_day, updateCurr_day] = useState(new Date());
   let customDatesStyles = [
     {
       startDate: cur_day,
@@ -48,31 +52,7 @@ export default function EmployeeInfo({ navigation, route }) {
     },
   ];
 
-  useEffect(() => {
-    // fetch(EmpInforURL)
-    // .then((data) => data.json())
-    // .then((json) => setTotalWorkInfo(json));
-
-    const fetchFunction = async () =>{
-      try{
-        const res = await fetch(EmpInforURL);
-        const json = await res.json();
-        setTotalWorkInfo(json);
-      }catch(err){
-        console.log(err);
-      }
-    };
-
-    fetchFunction();
-    setInterval(() => {
-      fetchFunction();
-    }, 10000);
-
-  },[])
-
-  
-
-  const reset = async (date) => {
+  const reset = (date, totalWorkInfo) => {
     updateCurr_day(date);
     // console.log(cur_day);
     let currentDayFormated = moment(date).format('YYYY-MM-DD');
@@ -85,7 +65,7 @@ export default function EmployeeInfo({ navigation, route }) {
       setWorkInfo(workPerDay[currentDayFormated]);
       if (parseInt(moment.unix(workPerDay[currentDayFormated].check_in).format('HH'), 10) < 12){
         if (parseInt(moment.unix(workPerDay[currentDayFormated].check_out).format('HH'), 10) > 13){
-          console.log(moment.utc(3600*1000).format('HH:mm:ss'))
+          // console.log(moment.utc(3600*1000).format('HH:mm:ss'))
           setRest(3600);
           // setRest(moment.unix(workPerDay[currentDayFormated].check_out) - moment.unix(workPerDay[currentDayFormated].check_in));
         }
@@ -149,6 +129,35 @@ export default function EmployeeInfo({ navigation, route }) {
     }
   }
 
+
+  useEffect(() => {
+    // fetch(EmpInforURL)
+    // .then((data) => data.json())
+    // .then((json) => setTotalWorkInfo(json));
+
+    const fetchFunction = async () =>{
+      fetch(EmpInforURL)
+      .then((data) => data.json())
+      .then((json) => {
+        setTotalWorkInfo(json);
+        if (loading){
+          reset(cur_day, json);
+        }
+
+        // console.log(cur_day);
+      })
+      .catch((error) => alert(error))
+      .finally(() => setLoading(false));;
+    };
+
+    fetchFunction();
+    // setInterval(() => {
+    //   console.log(cur_day);
+    //   fetchFunction();
+    // }, 10000);
+
+  },[])
+
   return (
       <View style={{backgroundColor: '#fff'}}>
 
@@ -170,14 +179,13 @@ export default function EmployeeInfo({ navigation, route }) {
                 highlightDateNumberStyle={{ color: "white" }}
                 highlightDateNameStyle={{ color: "white" }}
                 onDateSelected={(date) => {
-                  reset(date);
+                  reset(date, totalWorkInfo);
                 }}
                 customDatesStyles={customDatesStyles}
             />
           </View>
-
-
-          {/* This is the first block of information */}
+          
+          { loading ? (<Text style={styles.loadingText}>Đang tải thông tin nhân viên ... </Text>) : (
           <View style={{height: '100%'}}>
 
             {/* <View style={styles.totalHours}>
@@ -209,7 +217,7 @@ export default function EmployeeInfo({ navigation, route }) {
                   </View>
               </View>
             </View>
-          </View>
+          </View>)}
         </View>
       </View>
 
@@ -248,6 +256,10 @@ const styles = StyleSheet.create({
                 shadowOpacity: 0.27,
                 shadowRadius: 4.65,
                 
-                elevation: 6,}
+                elevation: 6,},
+  loadingText: {alignSelf: 'center',
+                fontSize: 20, 
+                fontWeight: 'bold',
+              color: '#8f8f8f'}
 
 });

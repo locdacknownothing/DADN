@@ -15,7 +15,8 @@ size={120}
 containerStyle={{alignSelf: 'center', backgroundColor:'#000', marginTop: 30}}
 avatarStyle={{}}/> */}
 
-export default function ProfileScreen({ navigation }) {
+export default function ProfileScreen({ navigation, route }) {
+  console.log(route);
   return (
     // Avatar with Title
     <View style={{backgroundColor: '#fff'}}>

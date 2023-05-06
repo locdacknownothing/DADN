@@ -10,6 +10,8 @@ import { Button } from "react-native-paper";
 import { theme } from "../../core/theme";
 import { Image } from "react-native-elements";
 
+const AIO_KEY = 'aio_hUMt27ARP4G523Tsr80MYXSX8nK1';
+
 const NUM_DEVICES = 2
 
 const devices = [
@@ -55,7 +57,7 @@ export default function ManageDevice({ navigation, route }) {
       const options = {
         method: 'POST',
         headers: {
-          'X-AIO-KEY': 'aio_cNnb89tpUEvikYWa3VaHtrPdPbeD',
+          'X-AIO-KEY': AIO_KEY,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data)
@@ -72,7 +74,7 @@ export default function ManageDevice({ navigation, route }) {
       const options = {
         method: 'POST',
         headers: {
-          'X-AIO-KEY': 'aio_cNnb89tpUEvikYWa3VaHtrPdPbeD',
+          'X-AIO-KEY': AIO_KEY,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data)
@@ -112,7 +114,7 @@ export default function ManageDevice({ navigation, route }) {
     const options = {
       method: 'POST',
       headers: {
-        'X-AIO-KEY': 'aio_cNnb89tpUEvikYWa3VaHtrPdPbeD',
+        'X-AIO-KEY': AIO_KEY,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(data)

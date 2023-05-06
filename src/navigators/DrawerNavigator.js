@@ -61,6 +61,7 @@ export default function DrawerNavigator({ route }) {
         />
       <Drawer.Screen 
         name="Quản lý thiết bị" 
+        initialParams={{ params: route.params }}
         component={ManageDevice} 
         options={({ navigation }) => ({
           drawerIcon: ({focused}) => (
@@ -79,6 +80,7 @@ export default function DrawerNavigator({ route }) {
       <Drawer.Screen 
         name="Bảng chấm công" 
         component={TimesheetScreen}
+        initialParams={{ params: route.params }}
         options={({ navigation }) => ({
           drawerIcon: ({focused}) => (
             <Icon name="calendar" type='feather' size={18} color={focused ? theme.colors.white: theme.colors.text}/>
@@ -96,6 +98,7 @@ export default function DrawerNavigator({ route }) {
       <Drawer.Screen 
         name="Danh sách nhân viên" 
         component={EmployeeList}
+        initialParams={{ params: route.params }}
         options={({ navigation }) => ({
           drawerIcon: ({focused}) => (
             <Icon name="list" type='feather' size={18} color={focused ? theme.colors.white: theme.colors.text}/>
