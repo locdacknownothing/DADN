@@ -10,7 +10,8 @@ import { Button } from "react-native-paper";
 import { theme } from "../../core/theme";
 import { Image } from "react-native-elements";
 import { json } from "react-router-dom";
-import { and } from "react-native-reanimated";
+import { and, ceil } from "react-native-reanimated";
+import "react-native-fs";
 
 const AIO_KEY = 'aio_hUMt27ARP4G523Tsr80MYXSX8nK1';
 
@@ -42,7 +43,39 @@ const hallways_light_url = "https://io.adafruit.com/api/v2/Vyvy0812/feeds/pasic-
 const fan_url = "https://io.adafruit.com/api/v2/Vyvy0812/feeds/pasic-smart-office.fan";
 
 export default function ManageDevice({ navigation, route }) {
-  console.log(route)
+  // Test for reading file
+  // require the module
+  var RNFS = require('react-native-fs');
+
+  // get a list of files and directories in the main bundle
+  RNFS.readDir(RNFS.MainBundlePath) // On Android, use "RNFS.DocumentDirectoryPath" (MainBundlePath is not defined)
+    .then((result) => {
+      console.log('GOT RESULT', result);
+
+      // stat the first file
+      return Promise.all([RNFS.stat(result[0].path), result[0].path]);
+    })
+    .then((statResult) => {
+      if (statResult[0].isFile()) {
+        // if we have a file, read it
+        return RNFS.readFile(statResult[1], 'utf8');
+      }
+
+      return 'no file';
+    })
+    .then((contents) => {
+      // log the file contents
+      console.log(contents);
+    })
+    .catch((err) => {
+      console.log(err.message, err.code);
+    });
+
+
+
+
+
+  // console.log(route)
   let name = route.params.name;
   let role = route.params.role;
   // const [isEnabled, setIsEnabled] = useState(Array.from({ length: NUM_DEVICES }, () => false));
@@ -94,7 +127,7 @@ export default function ManageDevice({ navigation, route }) {
     let newFanSpeed = fanSpeed + 25;
     newFanSpeed = newFanSpeed%125;
     setSpeed(newFanSpeed);
-    console.log(newFanSpeed);
+    // console.log(newFanSpeed);
 
     if (newFanSpeed === 0){
       setFanURL(require('../../assets/fanspeed/level0.png'));
@@ -213,15 +246,19 @@ export default function ManageDevice({ navigation, route }) {
           <ScrollView style={{ height: 3 * 50 }}>
             {devices.slice(0, 2).map((item) => (
               <View key={item.id} style={styles.itemContainer}>
-                <Text style={styles.itemName}>{item.name}</Text>
-                <Switch
-                  key={item.id - 1}
-                  trackColor={{ false: " #e6e5e6 ", true: "#66ff99" }}
-                  thumbColor={isEnabled ? "#ffffff" : "#cccccc"}
-                  onValueChange={() => toggleSwitch(item.id - 1)}
-                  value={isEnabled[item.id - 1]}
-                  style={styles.itemSwitch}
-                />
+                <View style={{borderWidth: 0, width: '80%'}}>
+                  <Text style={styles.itemName}>{item.name}</Text>
+                </View>
+                <View style ={{justifyContent: 'center', width: '20%', alignItems: 'center'}}>
+                  <Switch
+                    key={item.id - 1}
+                    trackColor={{ false: " #e6e5e6 ", true: "#66ff99" }}
+                    thumbColor={isEnabled ? "#ffffff" : "#cccccc"}
+                    onValueChange={() => toggleSwitch(item.id - 1)}
+                    value={isEnabled[item.id - 1]}
+                    style={[styles.itemSwitch]}
+                  />
+                </View>
               </View>
             ))}
           </ScrollView>
@@ -236,9 +273,11 @@ export default function ManageDevice({ navigation, route }) {
         <View style={styles.status}>
           <ScrollView style={{ height: 3 * 50 }}>
             <View key={3} style={styles.itemContainer}>
-              <Text style={styles.itemName}>Quạt văn phòng</Text>
-              <View style={{flex: 1, alignItems: 'flex-end'}}>
-                <Image source={fanIconURL} onPress={() => changeFanSpeed()} style={{width: 25, height: 27, marginRight: 15, marginTop: 7}}/>
+              <View style={{borderWidth: 0, width: '80%', borderWidth: 0}}>
+                <Text style={styles.itemName}>Quạt văn phòng</Text>
+              </View>
+              <View style ={{justifyContent: 'center', width: '20%', alignItems: 'center'}}>
+                <Image source={fanIconURL} onPress={() => changeFanSpeed()} style={{width: 30, height: 33}}/>
               </View>
               {/* <Switch
                 key={3}
@@ -269,8 +308,8 @@ const styles = StyleSheet.create({
     width: 90,
     alignSelf: "center",
     borderRadius: 100,
-    marginTop: 15,
     alignItems: "center",
+    marginBottom: 10,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -281,13 +320,13 @@ const styles = StyleSheet.create({
 
     elevation: 9,
   },
-  name: { fontSize: 24, textAlign: "center", fontWeight: "600" },
+  name: { fontSize: 24, textAlign: "center", fontWeight: "600"},
   role: { color: "#DF3222", fontSize: 20, fontWeight: "500" },
   body: {
     backgroundColor: "#fff",
     position: "absolute",
     bottom: 0,
-    height: "70%",
+    height: "75%",
     width: "100%",
   },
   status: {
@@ -322,7 +361,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     marginRight: 9,
   },
-  basicInfo: { width: 200, alignItems: "center", alignSelf: "center" },
+  basicInfo: { width: '100%', height: '25%', alignItems: 'center', justifyContent: 'center', borderWidth: 0},
   listName: {
     fontSize: 20,
     fontWeight: "600",
@@ -339,16 +378,14 @@ const styles = StyleSheet.create({
     marginRight: "10%",
   },
   itemContainer: {
-    flex: 1,
     flexDirection: 'row',
+    borderWidth: 0
   },
   itemName: {
-    fontSize: 16,
+    fontSize: 18,
     padding: 15,
     fontWeight: "500",
   },
   itemSwitch: {
-    flex: 1,
-    alignItems: "flex-end",
   },
 });

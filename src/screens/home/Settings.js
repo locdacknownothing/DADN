@@ -4,6 +4,7 @@ import Header from '../../components/Header'
 import { StyleSheet, View, Text,Switch } from 'react-native'
 import { Avatar, Icon} from 'react-native-elements'
 import { theme } from '../../core/theme'
+import { ceil } from 'react-native-reanimated'
 
 export default function Settings() {
   const [isEnabled, setIsEnabled] = useState(false);
@@ -29,25 +30,31 @@ export default function Settings() {
 
         <View style={styles.body}>
           <View style={styles.option}>
-            <View>
-              <Icon name="globe" type="feather" size={30} containerStyle={{marginVertical: 10, alignSelf: 'flex-start', marginLeft: 15, borderColor: "#000"}}/>
+            <View style={{borderWidth: 0, justifyContent: 'center', width: '15%'}}>
+              <Icon name="globe" type="feather" size={30} containerStyle={{}}/>
             </View>
-            <Text style={{color: "#000", marginVertical: 12, marginLeft: 15, height: '100%', fontSize: 20}}>Ngôn ngữ</Text>
-            <View style={{flexDirection: 'row'}}>
-              <Text style={{color: "#9c9c9c", height: '100%', fontSize: 20, marginLeft: 110, marginVertical: 12,   }}>
-                Tiếng Việt
-              </Text>
-              <View>
-                <Icon name="chevron-right" type="AntDesign" size={30} containerStyle={{marginVertical: 11}}/>
+            <View style={{borderWidth: 0, justifyContent: 'center', width: '52%'}}>
+              <Text style={{color: "#000", fontSize: 20}}>Ngôn ngữ</Text>
+            </View>
+            <View style={{flexDirection: 'row', width: '33%', justifyContent: 'center', borderWidth: 0}}>
+              <View style={{justifyContent: 'center'}}>
+                <Text style={{color: "#9c9c9c", fontSize: 20}}>
+                  Tiếng Việt
+                </Text>
+              </View>
+              <View style={{justifyContent: 'center'}}>
+                <Icon name="chevron-right" type="AntDesign" size={30} containerStyle={{}}/>
               </View>
             </View>
           </View>
           <View style={styles.option}>
-            <View>
+            <View style={{borderWidth: 0, justifyContent: 'center', width: '15%'}}>
               <Icon name="moon" type="feather" size={30} containerStyle={{marginVertical: 10, alignSelf: 'flex-start', marginLeft: 15, borderColor: "#000"}}/>
             </View> 
-            <Text style={{color: "#000", marginVertical: 12, marginLeft: 15, height: '100%', fontSize: 20}}>Chế độ tối</Text>
-            <View style={{marginVertical: 2, marginLeft: 180}}>
+            <View style={{borderWidth: 0, justifyContent: 'center', width: '65%'}}>
+              <Text style={{color: "#000", fontSize: 20}}>Chế độ tối</Text>
+            </View>
+            <View style={{width: '20%', justifyContent: 'center', alignItems: 'center', borderWidth: 0}}>
               <Switch
                   trackColor={{ false: " #e6e5e6 ", true: "#66ff99" }}
                   thumbColor={isEnabled ? "#ffffff" : "#cccccc"}
@@ -57,11 +64,13 @@ export default function Settings() {
             </View>
           </View>
           <View style={styles.option}>
-            <View>
+            <View style={{borderWidth: 0, justifyContent: 'center', width: '15%'}}>
               <Icon name="security" type="MaterialCommunityIcons" size={30} containerStyle={{marginVertical: 10, alignSelf: 'flex-start', marginLeft: 15, borderColor: "#000"}}/>
             </View>   
-            <Text style={{color: "#000", marginVertical: 12, marginLeft: 15, height: '100%', fontSize: 20}}>Đổi mật khẩu</Text>
+            <View style={{borderWidth: 0, justifyContent: 'center', width: '85%'}}>
+              <Text style={{color: "#000", fontSize: 20}}>Đổi mật khẩu</Text>
             </View>
+          </View>
         </View>
       </View>
     </View>
@@ -70,19 +79,27 @@ export default function Settings() {
 
 const styles = StyleSheet.create({
   container: {backgroundColor: theme.colors.subsubprime, height:'100%', borderTopLeftRadius: 50, borderTopRightRadius: 50},
-  avatarContainer: {backgroundColor: "#FDEDEB", height: 90, width: 90, alignSelf: 'center', borderRadius: 100, marginTop: 15, alignItems: 'center',
-                    shadowColor: "#000",
-                    shadowOffset: {
-                      width: 0,
-                      height: 4,
-                    },
-                    shadowOpacity: 0.32,
-                    shadowRadius: 5.46,
-                    
-                    elevation: 9,},
+  avatarContainer: {
+    backgroundColor: "#FDEDEB",
+    height: 90,
+    width: 90,
+    alignSelf: "center",
+    borderRadius: 100,
+    alignItems: "center",
+    marginBottom: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.32,
+    shadowRadius: 5.46,
+
+    elevation: 9,
+  },
   name: {fontSize: 24, textAlign: 'center', fontWeight: '600'},
   role: {color: '#DF3222', fontSize: 20, fontWeight: '500'},
-  body: {backgroundColor: '#d9d9d9', position: 'absolute', bottom: 0, height: "70%", width: '100%'},
-  option: {flexDirection: 'row', width: '100%', backgroundColor: "#fff", height: 50, marginBottom: 2},
-  basicInfo: {width: 200, alignItems: 'center', alignSelf: 'center'}
+  body: {backgroundColor: '#d9d9d9', position: 'absolute', bottom: 0, height: "75%", width: '100%'},
+  option: {flexDirection: 'row', height: 60, width: '100%', backgroundColor: "#fff", borderWidth: 0, marginBottom: 2},
+  basicInfo: {width: '100%', height: '25%', alignItems: 'center', justifyContent: 'center', borderWidth: 0}
 })

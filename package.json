@@ -31,6 +31,7 @@
     "react-native-chart-kit": "^6.12.0",
     "react-native-elements": "^3.4.3",
     "react-native-fontawesome": "^7.0.0",
+    "react-native-fs": "^2.20.0",
     "react-native-gesture-handler": "~2.9.0",
     "react-native-paper": "*",
     "react-native-reanimated": "~2.14.4",

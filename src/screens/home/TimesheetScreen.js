@@ -152,8 +152,9 @@ export default function TimesheetScreen({navigation, route}) {
       <View style={{backgroundColor: '#fff'}}>
 
         <View style={styles.containerTemp}>
-          <View style={{alignItems: 'center', marginVertical: 5, borderWidth: 1}}>
-            <Text style={{fontSize: 22, fontWeight: 'bold'}}>Xin chào {name}</Text>
+          <View style={{backgroundColor: '#dfdfdf', alignItems: 'center', paddingVertical: 10, marginBottom: 10}}>
+            <Text style={{fontSize: 22, fontWeight: 'bold'}}>Xin chào</Text>
+            <Text style={{color: 'red', fontSize: 22, fontWeight: 'bold', marginTop: 5}}>{name}</Text>
           </View>
           <View>
             <CalendarStrip

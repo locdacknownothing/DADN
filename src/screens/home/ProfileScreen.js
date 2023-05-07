@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
   infoLine: {flexDirection: 'row', marginBottom: 8, marginLeft: 5, marginRight: 5},
   textBox: {borderWidth: 2, borderRadius: 5, borderStyle: 'solid', borderColor: '#000', alignSelf: 'flex-end', width: '70%', fontSize: 16},
   text: {borderColor: '#000', borderStyle: 'solid', marginLeft: 5, overflow: 'hidden', },
-  button: {backgroundColor: '#D94545', alignItems: 'center', borderRadius: 20, width: '65%', height: 30, alignSelf: 'center', position: 'absolute', bottom: 0, marginBottom: 30, 
+  button: {backgroundColor: '#D94545', alignItems: 'center', justifyContent: 'center', borderRadius: 20, width: '65%', height: 50, alignSelf: 'center', position: 'absolute', bottom: 0, marginBottom: 30, 
           shadowColor: "#000",
           shadowOffset: {
             width: 0,
