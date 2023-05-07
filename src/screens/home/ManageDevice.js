@@ -9,6 +9,8 @@ import { Avatar, Icon } from "react-native-elements";
 import { Button } from "react-native-paper";
 import { theme } from "../../core/theme";
 import { Image } from "react-native-elements";
+import { json } from "react-router-dom";
+import { and } from "react-native-reanimated";
 
 const AIO_KEY = 'aio_hUMt27ARP4G523Tsr80MYXSX8nK1';
 
@@ -132,33 +134,24 @@ export default function ManageDevice({ navigation, route }) {
       try {
         const [res1, res2, res3] = await Promise.all([fetch(light_url), fetch(hallways_light_url), fetch(fan_url)]);
         const [json1, json2, json3] = await Promise.all([res1.json(), res2.json(), res3.json()]);
-
-        const setValues = async() => {
-          setLightValue(json1.last_value);
-          setHallwaysLightValue(json2.last_value);
-          setSpeed(parseInt(json3.last_value, 10));
+        
+        // console.log("Trang thai hien tai cua den van phong: " + json1.last_value + "\nButton state: " + toString(light1))
+        if (json1.last_value == "1"){
+          setLight1(true);
         }
-
-        setValues();
-        if (!json1.last_value*light1 + json1.last_value*!light1){
-          // console.log("Different 1");
-          setLight1(!light1);
-          // const newSwitches = [...isEnabled];
-          // newSwitches[0] = !newSwitches[0];
-          // setIsEnabled(newSwitches);
-        }
-        else{
-          // console.log("Same")
+        else if (json1.last_value == "0"){
+          setLight1(false);
         }
         
-        if (!json2.last_value*light2 + json2.last_value*!light2){
-          // console.log("Different 2");
-          setLight2(!light2);
+        // console.log("Trang thai hien tai cua den hanh lang: " + json2.last_value + "\nButton state: " + toString(light2))
+        if (json2.last_value == "1"){
+          setLight2(true);
         }
-        else{
-          // console.log("Same")
+        else if (json2.last_value == "0"){
+          setLight2(false);
         }
-        
+
+        setSpeed(parseInt(json3.last_value, 10));
         if (json3.last_value == '0'){
           setFanURL(require('../../assets/fanspeed/level0.png'))
         }
@@ -182,13 +175,9 @@ export default function ManageDevice({ navigation, route }) {
       };
     };
     myFunc();
-    // console.log(lightValue);
-    // console.log(hallwaysLightValue);
-    // console.log(fanValue);
     setInterval(() => {
       myFunc();
-      // console.log(isEnabled);
-    }, 10000);
+    }, 2000);
   }, [])
 
   return (
