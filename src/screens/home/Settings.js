@@ -5,8 +5,10 @@ import { StyleSheet, View, Text,Switch } from 'react-native'
 import { Avatar, Icon} from 'react-native-elements'
 import { theme } from '../../core/theme'
 import { ceil } from 'react-native-reanimated'
+import { img_urls } from '../../core/const'
+import { Route } from 'react-router-dom'
 
-export default function Settings() {
+export default function Settings({ navigation, route }) {
   const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = () => setIsEnabled(previousState => !previousState);
   return (
@@ -15,16 +17,13 @@ export default function Settings() {
         <View style={styles.basicInfo}>
           <View style={styles.avatarContainer}>
             <Avatar rounded size={70} containerStyle={{backgroundColor: '#F64561', marginTop: 10}}
-            source={{
-              uri:
-                'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Cat03.jpg/481px-Cat03.jpg',
-            }}/>
+            source={img_urls[route.params.id]}/>
           </View>
           <Text style={styles.name}>
-            Trương Nguyễn Khôi Nguyên
+            {route.params.name}
           </Text>
           <Text  style={styles.role}>
-            Employee
+            {route.params.role == 0 ? "Nhân viên" : "Quản lý"}
           </Text>
         </View>
 
