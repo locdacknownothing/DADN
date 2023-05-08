@@ -11,9 +11,9 @@ import { theme } from "../../core/theme";
 import { Image } from "react-native-elements";
 import { json } from "react-router-dom";
 import { and, ceil } from "react-native-reanimated";
-import { img_urls } from "../../core/const";
+import { img_urls, AIO_KEY } from "../../core/const";
 
-const AIO_KEY = 'aio_qEMb76O0TZ9UArfQsG4ejkCpr0O4';
+// const AIO_KEY = 'aio_qEMb76O0TZ9UArfQsG4ejkCpr0O4';
 
 const NUM_DEVICES = 2
 

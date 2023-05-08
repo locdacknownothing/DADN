@@ -8,8 +8,12 @@ from Adafruit_IO import MQTTClient, Client
 import cv2
 import speech_recognition as sr
 
+with open("../assets/ada_key.txt", "r") as f:
+    AIO_KEY = f.read()
+    f.close()
+
 AIO_USERNAME = "Vyvy0812"
-AIO_KEY = "aio_hUMt27ARP4G523Tsr80MYXSX8nK1"
+# AIO_KEY = "aio_hUMt27ARP4G523Tsr80MYXSX8nK1"
 aio = Client(AIO_USERNAME, AIO_KEY)
 
 office_light_url = "pasic-smart-office.offices-light"

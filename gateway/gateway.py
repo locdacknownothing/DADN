@@ -7,9 +7,14 @@ from Adafruit_IO import MQTTClient
 from uart import *
 import cv2
 
+with open("../assets/ada_key.txt", "r") as f:
+    AIO_KEY = f.read()
+    f.close()
+
+
 AIO_FEED_ID = ["pasic-smart-office.offices-light", "pasic-smart-office.hallways-light", "pasic-smart-office.fan"]
 AIO_USERNAME = "Vyvy0812"
-AIO_KEY = "aio_qEMb76O0TZ9UArfQsG4ejkCpr0O4"
+# AIO_KEY = "aio_qEMb76O0TZ9UArfQsG4ejkCpr0O4"
 
 
 
