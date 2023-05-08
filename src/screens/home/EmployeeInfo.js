@@ -55,8 +55,8 @@ export default function EmployeeInfo({ navigation, route }) {
   ];
 
   const reset = (date, totalWorkInfo) => {
+    // updateCurr_day(date);
     let rest_temp = 0;
-    updateCurr_day(date);
     // console.log(cur_day);
     let currentDayFormated = moment(date).format('YYYY-MM-DD');
     let workPerDay = {};
@@ -140,38 +140,30 @@ export default function EmployeeInfo({ navigation, route }) {
       setWorkInfo({})
       setIsNone(true);
     }
-    // console.log(workPerDay[currentDayFormated]);
-    // console.log(workInfo)
   }
 
+  const fetchFunction = async () =>{
+    fetch(EmpInforURL)
+    .then((data) => data.json())
+    .then((json) => {
+      setTotalWorkInfo(json);
+    })
+    .catch((error) => alert(error))
+    .finally(() => setLoading(false));;
+  };
 
   useEffect(() => {
-    // fetch(EmpInforURL)
-    // .then((data) => data.json())
-    // .then((json) => setTotalWorkInfo(json));
-
-    const fetchFunction = async () =>{
-      fetch(EmpInforURL)
-      .then((data) => data.json())
-      .then((json) => {
-        setTotalWorkInfo(json);
-        if (loading){
-          reset(cur_day, json);
-        }
-
-        // console.log(cur_day);
-      })
-      .catch((error) => alert(error))
-      .finally(() => setLoading(false));;
-    };
-
     fetchFunction();
-    // setInterval(() => {
-    //   console.log(cur_day);
-    //   fetchFunction();
-    // }, 10000);
-
+    const intervalFetch = setInterval(() => {
+      fetchFunction();
+    }, 3000)
+    return () => clearInterval(intervalFetch);
   },[])
+
+  useEffect(() => {
+    reset(cur_day, totalWorkInfo);
+  }, [cur_day, totalWorkInfo])
+
 
   return (
       <View style={{backgroundColor: '#fff'}}>
@@ -194,7 +186,7 @@ export default function EmployeeInfo({ navigation, route }) {
                 highlightDateNumberStyle={{ color: "white" }}
                 highlightDateNameStyle={{ color: "white" }}
                 onDateSelected={(date) => {
-                  reset(date, totalWorkInfo);
+                  updateCurr_day(date);
                 }}
                 customDatesStyles={customDatesStyles}
             />
@@ -225,13 +217,13 @@ export default function EmployeeInfo({ navigation, route }) {
                   <View style={{width: '50%', borderWidth: 0, justifyContent: 'center', alignItems: 'center'}}>
                     <Text style={{fontSize: 16, marginVertical: 3}}>Giờ làm bình thường</Text>
                     {
-                      (isCheckoutNone) ? (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>--</Text>) : (<Text style={{fontSize: 16, marginVertical: 3, color: '#8189B0', fontWeight: 'bold'}}>{moment.utc(norWorHours*1000).format('HH:mm:ss')}</Text>)
+                      (isCheckoutNone || norWorHours == 0) ? (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>--</Text>) : (<Text style={{fontSize: 16, marginVertical: 3, color: '#8189B0', fontWeight: 'bold'}}>{moment.utc(norWorHours*1000).format('HH:mm:ss')}</Text>)
                     }
                   </View>
                   <View style={{width: '50%', borderWidth: 0, justifyContent: 'center', alignItems: 'center'}}>
                     <Text style={{fontSize: 16, marginVertical: 3}}>Giờ làm tăng ca</Text>
                     {
-                      (isCheckoutNone) ? (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>--</Text>) : (<Text style={{fontSize: 16, marginVertical: 3, color: '#8189B0', fontWeight: 'bold'}}>{moment.utc(extrWorkHours*1000).format('HH:mm:ss')}</Text>)
+                      (isCheckoutNone || extrWorkHours == 0) ? (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>--</Text>) : (<Text style={{fontSize: 16, marginVertical: 3, color: '#8189B0', fontWeight: 'bold'}}>{moment.utc(extrWorkHours*1000).format('HH:mm:ss')}</Text>)
                     }
                   </View>
               </View>

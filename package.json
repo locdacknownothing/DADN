@@ -42,6 +42,7 @@
     "react-native-svg": "^13.4.0",
     "react-native-vector-icons": "^9.2.0",
     "react-router-dom": "^6.11.0",
+    "react-router-native": "^6.11.1",
     "typescript": "^4.9.4"
   },
   "devDependencies": {

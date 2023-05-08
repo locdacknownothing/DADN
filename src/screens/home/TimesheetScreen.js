@@ -50,30 +50,32 @@ export default function TimesheetScreen({navigation, route}) {
   let empInfoURL = baseURL.concat(id); 
 
   // console.log(empInfoURL)
+  const fetchFunction = async () =>{
+    try{
+      const res = await fetch(empInfoURL);
+      const json = await res.json();
+      setTotalWorkInfo(json);
+    }catch(err){
+      console.log(err);
+    }
+  };
+  useEffect(() => {
+    fetchFunction();
+    const intervalFetch = setInterval(() => {
+      fetchFunction();
+    }, 3000);
+
+    return () => clearInterval(intervalFetch);
+  },[])
 
   useEffect(() => {
-    const fetchFunction = async () =>{
-      try{
-        const res = await fetch(empInfoURL);
-        const json = await res.json();
-        setTotalWorkInfo(json);
-      }catch(err){
-        console.log(err);
-      }
-    };
-
-    fetchFunction();
-    setInterval(() => {
-      fetchFunction();
-    }, 10000);
-
-  },[])
+    reset(cur_day, totalWorkInfo);
+  }, [cur_day, totalWorkInfo])
 
   // console.log(totalWorkInfo);
 
-  const reset = (date) => {
+  const reset = (date, totalWorkInfo) => {
     let rest_temp = 0;
-    updateCurr_day(date);
     // console.log(cur_day);
     let currentDayFormated = moment(date).format('YYYY-MM-DD');
     let workPerDay = {};
@@ -85,7 +87,6 @@ export default function TimesheetScreen({navigation, route}) {
       if (workPerDay[currentDayFormated].check_out !== null){
         setIsCheckoutNoneNone(false);
       }
-
 
       setWorkInfo(workPerDay[currentDayFormated]);
       if (parseInt(moment.unix(workPerDay[currentDayFormated].check_in).format('HH'), 10) < 12){
@@ -184,7 +185,7 @@ export default function TimesheetScreen({navigation, route}) {
                 highlightDateNumberStyle={{ color: "white" }}
                 highlightDateNameStyle={{ color: "white" }}
                 onDateSelected={(date) => {
-                  reset(date);
+                  updateCurr_day(date);
                 }}
                 customDatesStyles={customDatesStyles}
             />

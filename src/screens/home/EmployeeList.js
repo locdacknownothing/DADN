@@ -1,19 +1,14 @@
 import React, { useEffect, useState } from "react";
-import Background from "../../components/Background";
-import Header from "../../components/Header";
 import CalendarStrip from "react-native-calendar-strip";
 import { StyleSheet, View, Text, ScrollView } from "react-native";
 import moment from "moment";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { Avatar, SearchBar, Icon } from "react-native-elements";
-import { json } from "react-router-dom";
-import { ColorSpace, set } from "react-native-reanimated";
-import { CurrentRenderContext } from "@react-navigation/native";
-import AuthStackNavigator from "../../navigators/AuthStackNavigator";
 import { IPADDRESS, img_urls } from "../../core/const";
 
 
 export default function EmployeeList({ navigation }) {
+  // Preset for calendar
+  
   const [cur_day, updateCurr_day] = useState(new Date());
   let customDatesStyles = [
     {
@@ -21,66 +16,52 @@ export default function EmployeeList({ navigation }) {
       dateContainerStyle: { backgroundColor: "black" },
     },
   ];
+
   const [searchText, updateSearchText] = useState("");
-  const [empName, updateEmpName] = useState("Truong Nguyen Khoi Nguyen");
-  const [avatarLink, updateAvatarLink] = useState(
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Cat03.jpg/481px-Cat03.jpg"
-  );
-  const [start_work_time, updateStartWorkTime] = useState("9:00");
-  const [end_work_time, updateEndWorkTime] = useState("Hiện tại");
-  // const [empInfor, updateEmpInfor] = useState([]);
+  
   const getEmpURL = "http://" + IPADDRESS + "/attcheck/";
 
   const [dataSource, setDatasource] = useState([]);
   const [loading, setLoading] = useState(true);
- 
-  const filterEmpArr = (json) => {
-    let processedArr = [];
-    for (let i = 0; i < json.length; i++){
-      ;
-    }
-  };
 
-  // Take first employee information
-  // useEffect(() => {
-  //   fetch(getEmpURL)
-  //   .then((data) => data.json())
-  //   .then((json) => setDatasource(json))
-  //   .catch((error) => console.log(error))
-  //   .finally(() => setLoading(false));
-  // }, []);
+  const checkRepeat = (json, dataSource) => {
+    let isRepeat = true;
+    if (json.length != dataSource.length)
+      return false;
+    for (let i = 0; i < json.length; i++){
+      if (json[i].check_out != dataSource[i].check_out)
+        isRepeat = false;
+      if (json[i].check_in != dataSource[i].check_in)
+        isRepeat = false;
+      if (!isRepeat)
+        break
+    }
+    return isRepeat;
+  }
 
   const fetchFunction = async () => {
-    // try{
-    //   const response = await fetch(getEmpURL);
-    //   const json = await response.json();
-
-    //   setDatasource(json);
-    //   // setRealData(processEmpInfo(json));
-    //   setLoading(false);
-    // } catch(err){
-    //   console.log(err)
-    // }
-
-  fetch(getEmpURL)
-  .then((response) => response.json())
-  .then((json) => {
-    setDatasource(json);
-    setRealData(processEmpInfo(json, cur_day));
-  })
-  .catch((error) => console.log(error))
-  .finally(() => setLoading(false))
-
+    // setLoading(true);
+    fetch(getEmpURL)
+    .then((response) => response.json())
+    .then((json) => {
+      setDatasource(json);
+    })
+    .catch((error) => console.log(error))
+    .finally(() => setLoading(false))
   };
+
+  useEffect(() => {
+    setRealData(processEmpInfo(dataSource, cur_day))
+  }, [dataSource, cur_day, searchText])
+
   useEffect(() => {
     fetchFunction();
-    // setInterval(() => {
-    //   fetchFunction();
-    // }, 10000)
+    const intervalFetch = setInterval(() => {
+      fetchFunction();
+    }, 3000)
 
+    return () => clearInterval(intervalFetch)
   }, [])
-
-  console.log(moment.unix(1682907239).format("DD/MM/YYYY h:mm:ss a"));
 
   const onPressInfo = (empInfo) => {
     navigation.navigate("EmployeeInfo", { id: empInfo.id, name: empInfo.name, day: cur_day });
@@ -90,70 +71,9 @@ export default function EmployeeList({ navigation }) {
 
   const reset = (date) =>{
     updateCurr_day(date);
-    // processEmpInfo();
-    // fetchFunction();
-    setRealData(processEmpInfo(dataSource, date));
   };
 
-  const processEmpInfoRes = (day) => {
-    let newDataSource = [];
-    let workDate = {};
-    let empList = {};
-    for (let i = 0; i < dataSource.length; i++){
-      // Process the date
-      let day = moment.unix(dataSource[i].check_in).format('DD/MM/YYYY');
-      if (workDate.hasOwnProperty(day)){
-        workDate[day].push(dataSource[i]);
-      }
-      else{
-        workDate[day] = [dataSource[i]];
-      }
-
-      // Process employee information
-      let isExist = false;
-      // console.log(newDataSource)
-      for (let j = 0; j < newDataSource.length; j++){
-        if (newDataSource[j].id == dataSource[i].id){
-          isExist = true;
-          // console.log("exists");
-          break;
-        }
-      }
-      if (isExist) continue;
-      let newEle = {check_in: 0, check_out: 0, id: dataSource[i].id, name: dataSource[i].name};
-      empList[dataSource[i].id] = newEle;
-      newDataSource.push(newEle);
-
-    }
-    // console.log(newDataSource);
-    // console.log(workDate);
-    
-    let current_day = moment(day).format('DD/MM/YYYY');
-    if (workDate.hasOwnProperty(current_day)){
-      let curWorkDate = workDate[current_day];
-      for (let i = 0; i < curWorkDate.length; i++){
-        // console.log(curWorkDate[i])
-        empList[curWorkDate[i].id].check_in = curWorkDate[i].check_in;
-        empList[curWorkDate[i].id].check_out = curWorkDate[i].check_out;
-      }
-    }
-
-    let finalRes = [];
-    for (const key in empList){
-      if (empList[key].check_in != 0){
-        finalRes.push(empList[key])
-      }
-      else{
-        // empList[key].check_in = null;
-        // empList[key].check_out = null;
-        // finalRes.push(empList[key]);
-      }
-    }
-    // useEffect(() => setRealData(finalRes), []);
-    // console.log(empList);
-    return finalRes;
-  }
-
+  // Process Employee Information function -> Because the data's key from server duplicated -> must be process before put to component
   const processEmpInfo = (dataSource_param, today) => {
     let newDataSource = [];
     let workDate = {};
@@ -174,7 +94,6 @@ export default function EmployeeList({ navigation }) {
       for (let j = 0; j < newDataSource.length; j++){
         if (newDataSource[j].id == dataSource_param[i].id){
           isExist = true;
-          // console.log("exists");
           break;
         }
       }
@@ -182,10 +101,7 @@ export default function EmployeeList({ navigation }) {
       let newEle = {check_in: null, check_out: null, id: dataSource_param[i].id, name: dataSource_param[i].name};
       empList[dataSource_param[i].id] = newEle;
       newDataSource.push(newEle);
-
     }
-    // console.log(newDataSource);
-    // console.log(workDate);
     
     let current_day = moment(today).format('DD/MM/YYYY');
     if (workDate.hasOwnProperty(current_day)){
@@ -199,20 +115,28 @@ export default function EmployeeList({ navigation }) {
 
     let finalRes = [];
     for (const key in empList){
-      if (empList[key].check_in != 0){
-        finalRes.push(empList[key])
-      }
-      else{
-        // empList[key].check_in = null;
-        // empList[key].check_out = null;
-        finalRes.push(empList[key]);
-      }
+      finalRes.push(empList[key]);
     }
-    // useEffect(() => setRealData(finalRes), []);
-    console.log(finalRes);
-    return finalRes;
-  }
 
+    filter_result = []
+    if (searchText){
+      for (let i = 0; i < finalRes.length; i++){
+        let empName = finalRes[i].name;
+        if (empName.toUpperCase().indexOf(searchText.toUpperCase()) > -1){
+          filter_result.push(finalRes[i]);
+        }
+      }
+      console.log(searchText)
+    }
+    else{
+      console.log("no text")
+      filter_result = finalRes;
+    }
+  
+    console.log(finalRes);
+    return filter_result;
+  }
+  
   return (
     <View style={[styles.containerTemp]}>
       <View>
@@ -258,7 +182,7 @@ export default function EmployeeList({ navigation }) {
       <View>
         <ScrollView style={styles.scrollView}>
               {loading ? (<Text style={styles.loadingText}>Loading .....</Text>) : (
-                  realData.map((empInfo) => (
+                  realData.map((empInfo, index) => (
                     <View style={styles.empHolder}>
                       <View style={{ flexDirection: "row" }}>
                         <View style={styles.avatarContainer}>
