@@ -48,7 +48,7 @@ export default function StatisticDetail({ navigation, route }) {
     "/data/";
 
   const [value, setValue] = useState([0]);
-  const RESET_TIME = 10000;
+  const RESET_TIME = 5000;
 
   useEffect(() => {
     const fetchFunction = async () => {
@@ -63,9 +63,12 @@ export default function StatisticDetail({ navigation, route }) {
     };
 
     fetchFunction();
-    setInterval(() => {
+
+    const intervalFetch = setInterval(() => {
       fetchFunction();
     }, RESET_TIME);
+
+    return () => clearInterval(intervalFetch);
   }, []);
 
   if (!value) {
@@ -76,17 +79,35 @@ export default function StatisticDetail({ navigation, route }) {
     );
   }
 
-  const stats = [];
-  const labels = [];
-  for (let i = 0; i < value.length; i++) {
-    // if (i % 10 === 0 || i === 99) {
-    if (i % 3 === 0 || i === value.length - 1) {
-      stats.push(value[i]);
+  // const stats = [];
+  // const labels = [];
+  const [stats, setStats] = useState([0])
+  const [labels, setLabels] = useState([0])
+
+
+  // const [stats, setStats] = useState([]);
+
+  const find_stats = (value_param) => {
+    let stats = []
+    let labels = []
+    for (let i = 0; i < value_param.length; i++) {
+      // if (i % 10 === 0 || i === 99) {
+      if (i % 3 === 0 || i === value_param.length - 1) {
+        stats.push(value_param[i]);
+      }
+      if (i % 9 === 0 || i === 99) {
+        labels.push(i);
+      }
     }
-    if (i % 9 === 0 || i === 99) {
-      labels.push(i);
-    }
+    return [stats, labels]
   }
+
+  useEffect(() => {
+    let new_stats_and_label = find_stats(value);
+
+    setStats(new_stats_and_label[0])
+    setLabels(new_stats_and_label[1])
+  }, [value])
 
   const data = {
     labels: labels,

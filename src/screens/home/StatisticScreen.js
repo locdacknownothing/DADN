@@ -47,9 +47,11 @@ export default function StatisticScreen({ navigation }) {
       };
     };
     fetchFunction();
-    setInterval(() => {
+    const intervalFetch = setInterval(() => {
       fetchFunction();
     }, RESET_TIME);
+
+    return () => clearInterval(intervalFetch);
   }, [])
 
   const evals = evaluateEnvironment(humiValue, tempValue, brightValue, noiseValue);

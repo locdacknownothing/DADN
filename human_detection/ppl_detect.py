@@ -7,13 +7,16 @@ LIGHT_OFF = False
 # Initializing the HOG person
 # detector
 
+with open("../assets/ada_key.txt", "r") as f:
+    MY_KEY = f.read()
+    f.close()
+
 AIO_USERNAME = "Vyvy0812"
-AIO_KEY = "aio_qEMb76O0TZ9UArfQsG4ejkCpr0O4"
 
 office_light_url = "pasic-smart-office.offices-light"
 fan_url = "pasic-smart-office.fan"
 
-aio = Client(AIO_USERNAME, AIO_KEY)
+aio = Client(AIO_USERNAME, MY_KEY)
 
 hog = cv2.HOGDescriptor()
 hog.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
