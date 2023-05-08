@@ -14,6 +14,7 @@ import * as Network from 'expo-network';
 import moment from "moment";
 import { FlatList } from "react-native-gesture-handler";
 import { cos, set } from "react-native-reanimated";
+import { IPADDRESS } from "../../core/const";
 
 export default function TimesheetScreen({navigation, route}) {
   // console.log(route);
@@ -25,7 +26,7 @@ export default function TimesheetScreen({navigation, route}) {
   let id = user.id;
   let name = user.name;
   let totalHours = 2400;
-  const baseURL = 'http://192.168.31.17:5000/attcheck/';
+  const baseURL = 'http://' + IPADDRESS + '/attcheck/';
   const [restTime, setRest] = useState(0);
   const [workTime, setWork] = useState(0);
   const [norWorHours, setNormal] = useState(0);
@@ -42,6 +43,7 @@ export default function TimesheetScreen({navigation, route}) {
   ];
 
   const [isNone, setIsNone] = useState(true);
+  const [isCheckoutNone, setIsCheckoutNoneNone] = useState(true);
 
   const [workInfo, setWorkInfo] = useState({});
 
@@ -79,6 +81,11 @@ export default function TimesheetScreen({navigation, route}) {
       workPerDay[day] = totalWorkInfo[i];
     }
     if (workPerDay.hasOwnProperty(currentDayFormated)){
+      if (workPerDay[currentDayFormated].check_out !== null){
+        setIsCheckoutNoneNone(false);
+      }
+
+
       setWorkInfo(workPerDay[currentDayFormated]);
       if (parseInt(moment.unix(workPerDay[currentDayFormated].check_in).format('HH'), 10) < 12){
         if (parseInt(moment.unix(workPerDay[currentDayFormated].check_out).format('HH'), 10) > 13){
@@ -202,14 +209,14 @@ export default function TimesheetScreen({navigation, route}) {
                     <View style={{width: '50%', height: 80, borderWidth: 0, justifyContent: 'center', alignItems: 'center'}}>
                       <Text style={{fontSize: 16, marginVertical: 2}}>First in</Text>
                       {
-                        isNone ? (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>Don't have value</Text>) : (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>{moment.unix(workInfo.check_in).format('h:mm:ss a')}</Text>)
+                        isNone ? (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>--</Text>) : (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>{moment.unix(workInfo.check_in).format('h:mm:ss a')}</Text>)
                       }
                       
                     </View>
                     <View style={{width: '50%', height: 80, borderWidth: 0, justifyContent: 'center', alignItems: 'center'}}>
                       <Text style={{fontSize: 16, marginVertical: 2}}>Last out</Text>
                       {
-                        isNone ? (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>Don't have value</Text>) : (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>{moment.unix(workInfo.check_out).format('h:mm:ss a')}</Text>)
+                        (isNone || isCheckoutNone) ? (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>--</Text>) : (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>{moment.unix(workInfo.check_out).format('h:mm:ss a')}</Text>)
                       }
                     </View>
                 </View>
@@ -217,13 +224,13 @@ export default function TimesheetScreen({navigation, route}) {
                     <View style={{width: '50%', height: 80, borderWidth: 0, justifyContent: 'center', alignItems: 'center'}}>
                       <Text style={{fontSize: 16, marginVertical: 2}}>Thời gian nghỉ</Text>
                       {
-                        isNone ? (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>Don't have value</Text>) : (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>{moment.utc(restTime*1000).format('HH:mm:ss')}</Text>)
+                        (isNone || isCheckoutNone) ? (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>--</Text>) : (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>{moment.utc(restTime*1000).format('HH:mm:ss')}</Text>)
                       }
                     </View>
                     <View style={{width: '50%', height: 80, borderWidth: 0, justifyContent: 'center', alignItems: 'center'}}>
                       <Text style={{fontSize: 16, marginVertical: 2}}>Thời gian làm việc</Text>
                       {
-                        isNone ? (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>Don't have value</Text>) : (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>{moment.utc(workTime*1000).format('HH:mm:ss')}</Text>)
+                        (isNone || isCheckoutNone) ? (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>--</Text>) : (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>{moment.utc(workTime*1000).format('HH:mm:ss')}</Text>)
                       }
                     </View>
                 </View>
@@ -241,11 +248,19 @@ export default function TimesheetScreen({navigation, route}) {
               <View style={{flexDirection: 'row', height: 110, borderWidth: 0}}>
                   <View style={{width: '50%', borderWidth: 0, justifyContent: 'center', alignItems: 'center'}}>
                     <Text style={{fontSize: 16, marginVertical: 3}}>Giờ làm bình thường</Text>
-                    <Text style={{fontSize: 16, marginVertical: 3, color: '#8189B0', fontWeight: 'bold'}}>{moment.utc(norWorHours*1000).format('HH:mm:ss')}</Text>
+                    {
+                      (isNone || isCheckoutNone) ? (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>--</Text>) : (<Text style={{fontSize: 16, marginVertical: 3, color: '#8189B0', fontWeight: 'bold'}}>{moment.utc(norWorHours*1000).format('HH:mm:ss')}</Text>)
+                    }
+                    
                   </View>
                   <View style={{width: '50%', borderWidth: 0, justifyContent: 'center', alignItems: 'center'}}>
                     <Text style={{fontSize: 16, marginVertical: 3}}>Giờ làm tăng ca</Text>
-                    <Text style={{fontSize: 16, marginVertical: 3, color: '#8189B0', fontWeight: 'bold'}}>{moment.utc(extrWorkHours*1000).format('HH:mm:ss')}</Text>
+                    {
+                      (isNone || isCheckoutNone) ? (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>--</Text>) : (
+
+                        <Text style={{fontSize: 16, marginVertical: 3, color: '#8189B0', fontWeight: 'bold'}}>{moment.utc(extrWorkHours*1000).format('HH:mm:ss')}</Text>
+                      )
+                    }
                   </View>
               </View>
             </View>

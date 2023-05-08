@@ -7,27 +7,33 @@ from Adafruit_IO import MQTTClient
 from uart import *
 import cv2
 
+with open("../assets/ada_key.txt", "r") as f:
+    MY_KEY = f.read()
+    f.close()
+
+
 AIO_FEED_ID = ["pasic-smart-office.offices-light", "pasic-smart-office.hallways-light", "pasic-smart-office.fan"]
 AIO_USERNAME = "Vyvy0812"
-AIO_KEY = "aio_qEMb76O0TZ9UArfQsG4ejkCpr0O4"
+
+
 
 def connected(client):
     try:
-        print("Connected successfully!!...")
+        print("Đã kết nối thành công!!...")
         for feed in AIO_FEED_ID:
             client.subscribe(feed)
     except:
-        print("Connected is fail!!...")
+        print("Kết nối thất bại!!...")
         
 def subscribe(client, userdata, mid, granted_qos):
-    print("Subscribe successfully!!...")
+    print("Đăng ký thành công!!...")
     
 def disconnected(client):
-    print("Disconnected...")
+    print("Ngắt kết nối...")
     sys.exit(1)
     
 def message(client, feed_id, payload):
-    print("Nhan du lieu " + feed_id + ": " + payload)
+    print("Nhận dữ liệu + feed_id + ": " + payload)
     if feed_id == "pasic-smart-office.offices-light":
         if payload == "1":
             writeData("A")
@@ -50,8 +56,7 @@ def message(client, feed_id, payload):
         elif payload == "100":
             writeData("4")
 
-client = MQTTClient(AIO_USERNAME, AIO_KEY)
-
+client = MQTTClient(AIO_USERNAME, MY_KEY)
 client.on_connect = connected
 client.on_disconnect = disconnected
 client.on_message = message
@@ -68,24 +73,24 @@ while True:
         counter = 5
         if type_data == 0:
             temp = random.randint(0, 50)
-            print("Cap nhat nhiet do: ", temp)
+            print("Cập nhật nhiet do: ", temp)
             client.publish("pasic-smart-office.temperature", temp)
             type_data = 1
         elif type_data == 1:
             humi = random.randint(0, 100)
-            print("Cap nhat do am: ", humi)
+            print("Cập nhật do am: ", humi)
             client.publish("pasic-smart-office.humidity", humi)
             type_data = 2
             
         elif type_data == 2:
             bright = random.randint(0, 100)
-            print("Cap nhat anh sang: ", bright)
+            print("Cập nhật anh sang: ", bright)
             client.publish("pasic-smart-office.brightness", bright)
             type_data = 3
             
         elif type_data == 3:
             noise = random.randint(0, 100)
-            print("Cap nhat am thanh: ", noise)
+            print("Cập nhật am thanh: ", noise)
             client.publish("pasic-smart-office.noise", noise)
             type_data = 0
         

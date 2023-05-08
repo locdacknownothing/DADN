@@ -4,6 +4,7 @@ import { Avatar, Icon } from 'react-native-elements'
 import { useParams } from 'react-router-dom'
 import { Button } from 'react-native-paper'
 import { theme } from '../../core/theme'
+import { img_urls } from '../../core/const'
 
 const temp_url = "https://io.adafruit.com/api/v2/Vyvy0812/feeds/pasic-smart-office.temperature";
 const humi_url = "https://io.adafruit.com/api/v2/Vyvy0812/feeds/pasic-smart-office.humidity";
@@ -17,10 +18,11 @@ let TIMEOUT_MS = 5000;
 
 export default function HomeScreen({ navigation, route }) {
   console.log(route);
+  // const hard_url2 = `../../../server/${route.params.img_url}`;
+  const img_url = (img_urls[route.params.id]);
   const name = route.params.name;
   const role = route.params.role;
-  const roleName = ["Employee", "Manager"];
-  // console.log("role: ", role)
+  const roleName = ["Nhân viên", "Quản lý"];
 
   const [tempValue, setTempValue] = useState(0);
   const [humiValue, setHumiValue] = useState(0);
@@ -63,10 +65,7 @@ export default function HomeScreen({ navigation, route }) {
       <View style={styles.basicInfo}>
           <View style={styles.avatarContainer}>
             <Avatar rounded size={70} containerStyle={{backgroundColor: '#F64561', marginTop: 10}}
-            source={{
-              uri:
-                'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Cat03.jpg/481px-Cat03.jpg',
-            }}/>
+            source={(img_url)}/>
           </View>
           <Text style={styles.name}>
             {name}

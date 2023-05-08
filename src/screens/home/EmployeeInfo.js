@@ -11,6 +11,7 @@ import { Icon } from "react-native-elements";
 import { theme } from "../../core/theme";
 import * as Network from 'expo-network';
 import moment from "moment";
+import { IPADDRESS } from "../../core/const";
 
 export default function EmployeeInfo({ navigation, route }) {
   // console.log(route.params);
@@ -26,7 +27,7 @@ export default function EmployeeInfo({ navigation, route }) {
   // let name = 'Khoi Nguyen';
   
   // Link to get infor of through id
-  const EmpInforURL = 'http://192.168.31.17:5000/attcheck/' + (id);
+  const EmpInforURL = 'http://' + IPADDRESS + '/attcheck/' + (id);
 
   let firstIn = 0;
   let lastOut = 0;
