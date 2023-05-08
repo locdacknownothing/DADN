@@ -11,9 +11,9 @@ import { theme } from "../../core/theme";
 import { Image } from "react-native-elements";
 import { json } from "react-router-dom";
 import { and, ceil } from "react-native-reanimated";
-import "react-native-fs";
+import { img_urls } from "../../core/const";
 
-const AIO_KEY = 'aio_hUMt27ARP4G523Tsr80MYXSX8nK1';
+const AIO_KEY = 'aio_qEMb76O0TZ9UArfQsG4ejkCpr0O4';
 
 const NUM_DEVICES = 2
 
@@ -43,38 +43,6 @@ const hallways_light_url = "https://io.adafruit.com/api/v2/Vyvy0812/feeds/pasic-
 const fan_url = "https://io.adafruit.com/api/v2/Vyvy0812/feeds/pasic-smart-office.fan";
 
 export default function ManageDevice({ navigation, route }) {
-  // Test for reading file
-  // require the module
-  var RNFS = require('react-native-fs');
-
-  // get a list of files and directories in the main bundle
-  RNFS.readDir(RNFS.MainBundlePath) // On Android, use "RNFS.DocumentDirectoryPath" (MainBundlePath is not defined)
-    .then((result) => {
-      console.log('GOT RESULT', result);
-
-      // stat the first file
-      return Promise.all([RNFS.stat(result[0].path), result[0].path]);
-    })
-    .then((statResult) => {
-      if (statResult[0].isFile()) {
-        // if we have a file, read it
-        return RNFS.readFile(statResult[1], 'utf8');
-      }
-
-      return 'no file';
-    })
-    .then((contents) => {
-      // log the file contents
-      console.log(contents);
-    })
-    .catch((err) => {
-      console.log(err.message, err.code);
-    });
-
-
-
-
-
   // console.log(route)
   let name = route.params.name;
   let role = route.params.role;
@@ -222,14 +190,12 @@ export default function ManageDevice({ navigation, route }) {
               rounded
               size={70}
               containerStyle={{ backgroundColor: "#F64561", marginTop: 10 }}
-              source={{
-                uri: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Cat03.jpg/481px-Cat03.jpg",
-              }}
+              source={img_urls[route.params.id]}
             />
           </View>
           <Text style={styles.name}>{name}</Text>
           {
-            role ? (<Text style={styles.role}>Manager</Text>) : (<Text style={styles.role}>Employee</Text>)
+            role ? (<Text style={styles.role}>Quản lý</Text>) : (<Text style={styles.role}>Nhân viên</Text>)
           }
           
         </View>

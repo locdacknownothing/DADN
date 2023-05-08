@@ -9,7 +9,7 @@ import cv2
 
 AIO_FEED_ID = ["pasic-smart-office.offices-light", "pasic-smart-office.hallways-light", "pasic-smart-office.fan"]
 AIO_USERNAME = "Vyvy0812"
-AIO_KEY = "aio_aBqE51VJ5chWBljOPLYh1ngL2ZCX"
+AIO_KEY = "aio_qEMb76O0TZ9UArfQsG4ejkCpr0O4"
 
 
 

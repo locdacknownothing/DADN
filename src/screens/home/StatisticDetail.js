@@ -8,7 +8,7 @@ import Background from "../../components/Background";
 import Header from "../../components/Header";
 
 const env = ["Độ ẩm", "Nhiệt độ", "Độ sáng", "Tiếng ồn"];
-const unit = ["%", "°C", "lux", "dB"];
+const unit = ["%", "\n°C", "\nlux", "\ndB"];
 // const timestamp = new Date();
 // const dateArray = getDateArray(timestamp);
 
@@ -25,7 +25,7 @@ const getValuesFromJson = (data) => {
     data_values.push(data[i].value);
   }
 
-  return data_values;
+  return data_values.slice().reverse();
 };
 
 function waitForVariable(variableName) {
@@ -79,8 +79,11 @@ export default function StatisticDetail({ navigation, route }) {
   const stats = [];
   const labels = [];
   for (let i = 0; i < value.length; i++) {
-    if (i % 10 === 0 || i === 99) {
+    // if (i % 10 === 0 || i === 99) {
+    if (i % 3 === 0 || i === value.length - 1) {
       stats.push(value[i]);
+    }
+    if (i % 9 === 0 || i === 99) {
       labels.push(i);
     }
   }
@@ -95,7 +98,7 @@ export default function StatisticDetail({ navigation, route }) {
     ],
     legend: [env[itemId] + "(" + unit[itemId] + ")"],
   };
-  const present = value[0];
+  const present = value[value.length - 1];
   const avg_ = value.reduce((acc, val) => acc + parseInt(val), 0) / 100;
   // const min_ = 0;
   // const max_ = 0;

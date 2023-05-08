@@ -26,9 +26,9 @@ class Login(Resource):
         q = f"SELECT id FROM account WHERE account.email == '{email}' AND account.password == '{password}'"
         emp_id = next(conn.execute(q), None)
         if emp_id is not None:
-            i, name, role = next(conn.execute(
-                f"SELECT id, name, role FROM user WHERE user.id == {emp_id[0]}"))
-            return {'id': i, 'name': name, 'role': role}
+            i, name, role, img_url = next(conn.execute(
+                f"SELECT id, name, role, img_url FROM user WHERE user.id == {emp_id[0]}"))
+            return {'id': i, 'name': name, 'role': role, "img_url": "../../../server/" + img_url}
         else:
             return None
 
