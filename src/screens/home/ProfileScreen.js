@@ -8,6 +8,7 @@ import PaperButton from '../../components/Button'
 import { Avatar } from 'react-native-elements'
 import { Button } from 'react-native-paper'
 import { theme } from '../../core/theme'
+import { img_urls } from '../../core/const'
 
 {/* <Avatar 
 rounded title="MD" 
@@ -24,10 +25,7 @@ export default function ProfileScreen({ navigation, route }) {
       <View style={styles.container}>
         <View style={styles.avatarContainer}>
           <Avatar rounded size={90} containerStyle={{backgroundColor: '#F64561', marginTop: 10}}
-          source={{
-            uri:
-              'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Cat03.jpg/481px-Cat03.jpg',
-          }}
+          source={img_urls[route.params.id]}
           />
         </View>
         <View style={styles.infoBox}>
@@ -36,7 +34,7 @@ export default function ProfileScreen({ navigation, route }) {
               <Text style={{alignSelf: 'flex-start', marginLeft: 10, fontSize: 16, width: '25%', fontWeight: '500'}}>Họ và tên: </Text>
               <View style={styles.textBox}>
                 <Text style={styles.text}>
-                  Trương Nguyễn Khôi Nguyên
+                  {route.params.name}
                 </Text>
               </View>
             </View>
@@ -69,7 +67,7 @@ export default function ProfileScreen({ navigation, route }) {
               <Text style={{alignSelf: 'flex-start', marginLeft: 10, fontSize: 16, width: '25%', fontWeight: '500'}}>Chức vụ: </Text>
               <View style={styles.textBox}>
                 <Text style={styles.text}>
-                  Content Creator
+                  {route.params.role == 0 ? "Nhân viên" : "Quản lý"}
                 </Text>
               </View>
             </View>
@@ -123,7 +121,7 @@ export default function ProfileScreen({ navigation, route }) {
             </View>
         </View>
 
-        <View style={styles.button}><Text style={styles.buttonText}>Chỉnh sửa các thông tin</Text></View>
+        {/* <View style={styles.button}><Text style={styles.buttonText}>Chỉnh sửa các thông tin</Text></View> */}
 
       </View>
     </View>

@@ -14,7 +14,7 @@ def getPort():
             commPort = (splitPort[0])
     
     # return commPort
-    return "COM6"
+    return "COM11"
     
 if getPort() != "None":
     ser = serial.Serial(port= getPort(), baudrate= 115200)

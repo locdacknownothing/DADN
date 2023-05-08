@@ -44,6 +44,7 @@ export default function DrawerNavigator({ route }) {
       />
       <Drawer.Screen 
         name="Thông tin cá nhân" 
+        initialParams={user}
         component={ProfileScreen}
         options={({ navigation }) => ({
           drawerIcon: ({focused}) => (
@@ -61,7 +62,7 @@ export default function DrawerNavigator({ route }) {
         />
       <Drawer.Screen 
         name="Quản lý thiết bị" 
-        initialParams={{ params: route.params }}
+        initialParams={user}
         component={ManageDevice} 
         options={({ navigation }) => ({
           drawerIcon: ({focused}) => (
@@ -80,7 +81,7 @@ export default function DrawerNavigator({ route }) {
       <Drawer.Screen 
         name="Bảng chấm công" 
         component={TimesheetScreen}
-        initialParams={{ params: route.params }}
+        initialParams={user}
         options={({ navigation }) => ({
           drawerIcon: ({focused}) => (
             <Icon name="calendar" type='feather' size={18} color={focused ? theme.colors.white: theme.colors.text}/>
@@ -98,7 +99,7 @@ export default function DrawerNavigator({ route }) {
       <Drawer.Screen 
         name="Danh sách nhân viên" 
         component={EmployeeList}
-        initialParams={{ params: route.params }}
+        initialParams={user}
         options={({ navigation }) => ({
           drawerIcon: ({focused}) => (
             <Icon name="list" type='feather' size={18} color={focused ? theme.colors.white: theme.colors.text}/>
@@ -135,6 +136,7 @@ export default function DrawerNavigator({ route }) {
     
       <Drawer.Screen 
         name="Cài đặt" 
+        initialParams={user}
         component={Settings} 
         options={({ navigation }) => ({
           drawerIcon: ({focused}) => (

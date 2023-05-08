@@ -12,6 +12,7 @@ import { theme } from '../../core/theme'
 import { emailValidator } from '../../helpers/emailValidator'
 import { passwordValidator } from '../../helpers/passwordValidator'
 import DrawerNavigator from '../../navigators/DrawerNavigator'
+import { IPADDRESS } from '../../core/const'
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState({ value: '', error: '' })
@@ -38,7 +39,7 @@ export default function LoginScreen({ navigation }) {
       body: JSON.stringify(data)
     };
 
-    const response = await fetch('http://192.168.31.17:5000/login/', options)
+    const response = await fetch(`http://` + IPADDRESS + `/login/`, options)
     const user = await response.json();
 
     if (user !== null) {

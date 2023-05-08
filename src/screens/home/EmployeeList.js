@@ -10,6 +10,8 @@ import { json } from "react-router-dom";
 import { ColorSpace, set } from "react-native-reanimated";
 import { CurrentRenderContext } from "@react-navigation/native";
 import AuthStackNavigator from "../../navigators/AuthStackNavigator";
+import { IPADDRESS, img_urls } from "../../core/const";
+
 
 export default function EmployeeList({ navigation }) {
   const [cur_day, updateCurr_day] = useState(new Date());
@@ -27,7 +29,7 @@ export default function EmployeeList({ navigation }) {
   const [start_work_time, updateStartWorkTime] = useState("9:00");
   const [end_work_time, updateEndWorkTime] = useState("Hiện tại");
   // const [empInfor, updateEmpInfor] = useState([]);
-  const getEmpURL = "http://192.168.31.17:5000/attcheck/";
+  const getEmpURL = "http://" + IPADDRESS + "/attcheck/";
 
   const [dataSource, setDatasource] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -202,7 +204,7 @@ export default function EmployeeList({ navigation }) {
       else{
         // empList[key].check_in = null;
         // empList[key].check_out = null;
-        // finalRes.push(empList[key]);
+        finalRes.push(empList[key]);
       }
     }
     // useEffect(() => setRealData(finalRes), []);
@@ -261,17 +263,15 @@ export default function EmployeeList({ navigation }) {
                           <Avatar
                             rounded
                             size={55}
-                            source={{
-                              uri: avatarLink,
-                            }}
+                            source={img_urls[empInfo.id]}
                             containerStyle={{ backgroundColor: "#F64561" }}
                           ></Avatar>
                         </View>
                         <View style={styles.userInforHolder}>
                           <Text size={16}>{empInfo.name}</Text>
                           <Text size={12} style={{ color: "#8189B0", fontWeight: "bold" }}>
-                            {moment.unix(empInfo.check_in).format("h:mm:ss a")} -{" "}
-                            {moment.unix(empInfo.check_out).format("h:mm:ss a")}
+                            {empInfo.check_in !== 0 ? moment.unix(empInfo.check_in).format("h:mm:ss a") : "--"} -{" "}
+                            {empInfo.check_out !== 0 ? moment.unix(empInfo.check_out).format("h:mm:ss a") : "--"}
                           </Text>
                         </View>
                         <View
