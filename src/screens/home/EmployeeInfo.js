@@ -6,7 +6,8 @@ import {
   StyleSheet,
   View,
   Text,
-  Dimensions
+  Dimensions,
+  ScrollView
 } from "react-native";
 import { Icon } from "react-native-elements";
 import { theme } from "../../core/theme";
@@ -35,6 +36,9 @@ export default function EmployeeInfo({ navigation, route }) {
   const [workTime_inWeek, setWeek] = useState(0);
   const [startWeek, setStartWeek] = useState(0);
   const [endWeek, setEndWeek] = useState(0);
+  const [norWorHoursWeek, setWeekNormal] = useState(0);
+  const [extrWorHoursWeek, setWeekExtra] = useState(0);
+
   const [restTime, setRest] = useState(0);
   const [workTime, setWork] = useState(0);
   const [norWorHours, setNormal] = useState(0);
@@ -133,6 +137,7 @@ export default function EmployeeInfo({ navigation, route }) {
 
   const calculateWeekTime = (date, work_per_day) => {
     let total_in_week = 0
+    let normal_in_week = 0
     let current_week = moment(new Date(date)).week();
     let week_from = moment(new Date(date)).startOf("week").format("DD/MM")
     let week_to = moment(new Date(date)).endOf("week").format("DD/MM")
@@ -142,14 +147,15 @@ export default function EmployeeInfo({ navigation, route }) {
       if (work_per_day[key].check_out == null) 
         continue;
       if (moment(new Date(key)).week() == current_week){
-        total_in_week += calculateWorkTime(work_per_day[key].check_in, work_per_day[key].check_out)[3];
-        
-        temp_weekData[moment(new Date(key)).day()] = calculateWorkTime(work_per_day[key].check_in, work_per_day[key].check_out)[3];
+        let work_time_in_day = calculateWorkTime(work_per_day[key].check_in, work_per_day[key].check_out);
+        total_in_week += work_time_in_day[3];
+        normal_in_week += work_time_in_day[0]
+        temp_weekData[moment(new Date(key)).day()] = work_time_in_day[3];
       }
     }
     setWeekData(temp_weekData);
 
-    return [total_in_week, week_from, week_to]
+    return [total_in_week, week_from, week_to, normal_in_week, total_in_week - normal_in_week]
   }
 
   // console.log(moment(new Date("2023-12-13")).week())
@@ -185,6 +191,8 @@ export default function EmployeeInfo({ navigation, route }) {
     setWeek(calculateWeekTime(date, workPerDay)[0]);
     setStartWeek(calculateWeekTime(date, workPerDay)[1]);
     setEndWeek(calculateWeekTime(date, workPerDay)[2]);
+    setWeekNormal(calculateWeekTime(date, workPerDay)[3]);
+    setWeekExtra(calculateWeekTime(date, workPerDay)[4]);
 
     if (workPerDay.hasOwnProperty(currentDayFormated)){
       if (workPerDay[currentDayFormated].check_out !== null){
@@ -255,19 +263,36 @@ export default function EmployeeInfo({ navigation, route }) {
           </View>
           
           { loading ? (<Text style={styles.loadingText}>Đang tải thông tin nhân viên ... </Text>) : (
-          <View style={{height: '100%'}}>
+          <ScrollView style={{height: '100%'}}>
 
-            <View style={styles.totalHours}>
-              <View style={{borderWidth: 0, justifyContent: 'center', width: '75%'}}>
-                <Text style={{fontSize: 16, borderWidth: 0, paddingLeft: 20, fontWeight: '600'}}>
-                  Tổng thời gian trong tuần từ
-                </Text>
-                <Text style={{fontSize: 16, borderWidth: 0, paddingLeft: 20, fontWeight: '600'}}>
-                  {startWeek} - {endWeek}
-                </Text>
+            <View style={styles.totalWeek}>
+              <View style={styles.totalHours}>
+                <View style={{borderWidth: 0, justifyContent: 'center', width: '75%'}}>
+                  <Text style={{fontSize: 20, borderWidth: 0, fontWeight: 'bold'}}>
+                    Tổng thời gian trong tuần 
+                  </Text>
+                  <Text style={{fontSize: 20, borderWidth: 0, fontWeight: 'bold'}}>
+                    từ {startWeek} - {endWeek}
+                  </Text>
+                </View>
+                <View style={{borderWidth: 0, justifyContent: 'center', width: '25%', alignItems: 'center'}}> 
+                  {workTime_inWeek == 0 ? (<Text style={{fontSize: 17, borderWidth: 0, color: '#8189B0', fontWeight: 'bold'}}>--</Text>) : (<Text style={{fontSize: 17, borderWidth: 0, color: '#8189B0', fontWeight: 'bold'}}>{(workTime_inWeek/3600.0).toFixed(2)}h</Text>)}
+                </View>
               </View>
-              <View style={{borderWidth: 0, justifyContent: 'center', width: '25%', alignItems: 'center'}}> 
-                {workTime_inWeek == 0 ? (<Text style={{fontSize: 17, borderWidth: 0, color: '#8189B0', fontWeight: 'bold'}}>--</Text>) : (<Text style={{fontSize: 17, borderWidth: 0, color: '#8189B0', fontWeight: 'bold'}}>{moment.utc(workTime_inWeek*1000).format("HH:mm:ss")}</Text>)}
+                
+              <View style={{flexDirection: 'row', height: 70, borderWidth: 0}}>
+                  <View style={{width: '50%', borderWidth: 0, justifyContent: 'center', alignItems: 'center'}}>
+                    <Text style={{fontSize: 16, marginVertical: 3}}>Giờ làm bình thường</Text>
+                    {
+                      (norWorHoursWeek == 0) ? (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>--</Text>) : (<Text style={{fontSize: 16, marginVertical: 3, color: '#8189B0', fontWeight: 'bold'}}>{(norWorHoursWeek/3600.0).toFixed(2)}h</Text>)
+                    }
+                  </View>
+                  <View style={{width: '50%', borderWidth: 0, justifyContent: 'center', alignItems: 'center'}}>
+                    <Text style={{fontSize: 16, marginVertical: 3}}>Giờ làm tăng ca</Text>
+                    {
+                      (extrWorHoursWeek == 0) ? (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>--</Text>) : (<Text style={{fontSize: 16, marginVertical: 3, color: '#8189B0', fontWeight: 'bold'}}>{(extrWorHoursWeek/3600.0).toFixed(2)}h</Text>)
+                    }
+                  </View>
               </View>
             </View>
 
@@ -275,7 +300,7 @@ export default function EmployeeInfo({ navigation, route }) {
             <View style={styles.totalSalaryHours}>
               {/* Title */}
               <View style={{borderWidth: 0, height: 40, justifyContent: 'center', paddingLeft: 10}}>
-                <Text style={{fontSize: 20, fontWeight: 'bold'}}>Tổng thời gian trả lương</Text>
+                <Text style={{fontSize: 20, fontWeight: 'bold'}}>Tổng thời gian trả lương trong ngày</Text>
               </View>
 
               <View style={{flexDirection: 'row', height: 110, borderWidth: 0}}>
@@ -311,8 +336,8 @@ export default function EmployeeInfo({ navigation, route }) {
                 formatYLabel={(y_value) => (y_value/3600.0).toFixed(2)}
                 style={styles.chart}
               />
-      </View>
-          </View>)}
+            </View>
+          </ScrollView>)}
         </View>
       </View>
 
@@ -322,16 +347,7 @@ export default function EmployeeInfo({ navigation, route }) {
 const styles = StyleSheet.create({
   container: { flex: 1, height: 100 },
   containerTemp: {width: '100%', height: '100%', padding: 0, margin: 0, borderColor: '#000', borderWidth: 0},
-  totalHours: {height: 50, borderWidth: 0, borderRadius: 10, marginHorizontal: 10, backgroundColor: '#f2f8ff', flexDirection: 'row',
-                shadowColor: "#000",
-                shadowOffset: {
-                  width: 0,
-                  height: 3,
-                },
-                shadowOpacity: 0.27,
-                shadowRadius: 4.65,
-                
-                elevation: 6,},
+  totalHours: {height: 80, borderWidth: 0, borderRadius: 10, marginHorizontal: 10, flexDirection: 'row',},
   workingWatch: {height: 200, borderWidth: 0, marginHorizontal: 10, backgroundColor: '#f2f8ff', marginVertical: 15, borderRadius: 20,
                 shadowColor: "#000",
                 shadowOffset: {
@@ -372,5 +388,18 @@ const styles = StyleSheet.create({
     shadowRadius: 5.46,
     elevation: 9,
   },
-
+  totalWeek: {
+    backgroundColor: '#f2f8ff',
+    borderRadius: 20,
+    marginHorizontal: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
+    
+    elevation: 6,
+  },  
 });
