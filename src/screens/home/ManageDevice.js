@@ -176,7 +176,7 @@ export default function ManageDevice({ navigation, route }) {
     myFunc();
     setInterval(() => {
       myFunc();
-    }, 2000);
+    }, 4000);
   }, [])
 
   return (

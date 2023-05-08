@@ -72,6 +72,7 @@ export default function TimesheetScreen({navigation, route}) {
   // console.log(totalWorkInfo);
 
   const reset = (date) => {
+    let rest_temp = 0;
     updateCurr_day(date);
     // console.log(cur_day);
     let currentDayFormated = moment(date).format('YYYY-MM-DD');
@@ -91,28 +92,34 @@ export default function TimesheetScreen({navigation, route}) {
         if (parseInt(moment.unix(workPerDay[currentDayFormated].check_out).format('HH'), 10) > 13){
           console.log(moment.utc(3600*1000).format('HH:mm:ss'))
           setRest(3600);
+          rest_temp = 3600;
           // setRest(moment.unix(workPerDay[currentDayFormated].check_out) - moment.unix(workPerDay[currentDayFormated].check_in));
         }
         else if (parseInt(moment.unix(workPerDay[currentDayFormated].check_out).format('HH'), 10) < 12){
           setRest(0);
+          rest_temp = 0;
         }
         else{
           let min = parseInt(moment.unix(workPerDay[currentDayFormated].check_out).minutes(), 10);
           let sec = parseInt(moment.unix(workPerDay[currentDayFormated].check_out).seconds(), 10);
           let totalSec = min*60 + sec;
           setRest(3600 - totalSec);
+          rest_temp = 3600 - totalSec;
         }
       }
-      else if (parseInt(moment.unix(workPerDay[currentDayFormated].check_in).format('HH'), 10) > 13){
+      else if (parseInt(moment.unix(workPerDay[currentDayFormated].check_in).format('HH'), 10) >= 13){
         setRest(0);
+        rest_temp = 0
       }
       else{
+        console.log(moment.unix(workPerDay[currentDayFormated].check_in).format('HH:mm:ss'))
         if (parseInt(moment.unix(workPerDay[currentDayFormated].check_out).format('HH'), 10) > 13){
           let min = parseInt(moment.unix(workPerDay[currentDayFormated].check_in).minutes(), 10);
           let sec = parseInt(moment.unix(workPerDay[currentDayFormated].check_in).seconds(), 10);
           let totalSec = min*60 + sec;
           // setRest(totalSec);
           setRest(3600 - totalSec);
+          rest_temp = 3600 - totalSec
           // setRest(moment.unix(workPerDay[currentDayFormated].check_out) - moment.unix(workPerDay[currentDayFormated].check_in));
         }
         else{
@@ -124,6 +131,7 @@ export default function TimesheetScreen({navigation, route}) {
           let sec_in = parseInt(moment.unix(workPerDay[currentDayFormated].check_in).seconds(), 10);
           let totalSec_in = min_out*60 + sec_in;
           setRest(3600 - totalSec_in - totalSec_out);
+          rest_temp = 3600 - totalSec_in - totalSec_out;
         }
       }
 
@@ -131,7 +139,7 @@ export default function TimesheetScreen({navigation, route}) {
       let ci = parseInt(moment.unix(workPerDay[currentDayFormated].check_in).hours(), 10)*3600 + parseInt(moment.unix(workPerDay[currentDayFormated].check_in).minutes(), 10)*60 + parseInt(moment.unix(workPerDay[currentDayFormated].check_in).seconds(), 10)
       let co = parseInt(moment.unix(workPerDay[currentDayFormated].check_out).hours(), 10)*3600 + parseInt(moment.unix(workPerDay[currentDayFormated].check_out).minutes(), 10)*60 + parseInt(moment.unix(workPerDay[currentDayFormated].check_out).seconds(), 10)
       let ex = 0;
-      let work_temp = co - ci - restTime
+      let work_temp = co - ci - rest_temp
       setWork(work_temp)
       
       // set normal

@@ -50,29 +50,29 @@ export default function EmployeeList({ navigation }) {
   //   .finally(() => setLoading(false));
   // }, []);
 
+  const fetchFunction = async () => {
+    // try{
+    //   const response = await fetch(getEmpURL);
+    //   const json = await response.json();
+
+    //   setDatasource(json);
+    //   // setRealData(processEmpInfo(json));
+    //   setLoading(false);
+    // } catch(err){
+    //   console.log(err)
+    // }
+
+  fetch(getEmpURL)
+  .then((response) => response.json())
+  .then((json) => {
+    setDatasource(json);
+    setRealData(processEmpInfo(json, cur_day));
+  })
+  .catch((error) => console.log(error))
+  .finally(() => setLoading(false))
+
+  };
   useEffect(() => {
-    const fetchFunction = async () => {
-      // try{
-      //   const response = await fetch(getEmpURL);
-      //   const json = await response.json();
-
-      //   setDatasource(json);
-      //   // setRealData(processEmpInfo(json));
-      //   setLoading(false);
-      // } catch(err){
-      //   console.log(err)
-      // }
-
-      fetch(getEmpURL)
-      .then((response) => response.json())
-      .then((json) => {
-        setDatasource(json);
-        setRealData(processEmpInfo(json, cur_day));
-      })
-      .catch((error) => console.log(error))
-      .finally(() => setLoading(false))
-
-    };
     fetchFunction();
     // setInterval(() => {
     //   fetchFunction();
@@ -91,6 +91,7 @@ export default function EmployeeList({ navigation }) {
   const reset = (date) =>{
     updateCurr_day(date);
     // processEmpInfo();
+    // fetchFunction();
     setRealData(processEmpInfo(dataSource, date));
   };
 
@@ -178,7 +179,7 @@ export default function EmployeeList({ navigation }) {
         }
       }
       if (isExist) continue;
-      let newEle = {check_in: 0, check_out: 0, id: dataSource_param[i].id, name: dataSource_param[i].name};
+      let newEle = {check_in: null, check_out: null, id: dataSource_param[i].id, name: dataSource_param[i].name};
       empList[dataSource_param[i].id] = newEle;
       newDataSource.push(newEle);
 
@@ -208,6 +209,7 @@ export default function EmployeeList({ navigation }) {
       }
     }
     // useEffect(() => setRealData(finalRes), []);
+    console.log(finalRes);
     return finalRes;
   }
 
@@ -270,8 +272,8 @@ export default function EmployeeList({ navigation }) {
                         <View style={styles.userInforHolder}>
                           <Text size={16}>{empInfo.name}</Text>
                           <Text size={12} style={{ color: "#8189B0", fontWeight: "bold" }}>
-                            {empInfo.check_in !== 0 ? moment.unix(empInfo.check_in).format("h:mm:ss a") : "--"} -{" "}
-                            {empInfo.check_out !== 0 ? moment.unix(empInfo.check_out).format("h:mm:ss a") : "--"}
+                            {empInfo.check_in != null ? moment.unix(empInfo.check_in).format("h:mm:ss a") : "--"} -{" "}
+                            {(empInfo.check_out != null) ? moment.unix(empInfo.check_out).format("h:mm:ss a") : "--"}
                           </Text>
                         </View>
                         <View

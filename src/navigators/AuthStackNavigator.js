@@ -29,7 +29,7 @@ export default function AuthStackNavigator() {
         component={StatisticDetail}
         options={{
           headerShown: true,
-          title: "Biểu đồ thống kê",
+          title: "Biểu đồ thống kê chi tiết",
         }}
       />
       <Stack.Screen
