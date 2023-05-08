@@ -6,12 +6,15 @@ import {
   StyleSheet,
   View,
   Text,
+  Dimensions
 } from "react-native";
 import { Icon } from "react-native-elements";
 import { theme } from "../../core/theme";
 import * as Network from 'expo-network';
 import moment from "moment";
 import { IPADDRESS } from "../../core/const";
+import { LineChart } from "react-native-chart-kit";
+
 
 export default function EmployeeInfo({ navigation, route }) {
   // console.log(route.params);
@@ -29,10 +32,9 @@ export default function EmployeeInfo({ navigation, route }) {
   // Link to get infor of through id
   const EmpInforURL = 'http://' + IPADDRESS + '/attcheck/' + (id);
 
-  let firstIn = 0;
-  let lastOut = 0;
-
-  let totalHours = 2400;
+  const [workTime_inWeek, setWeek] = useState(0);
+  const [startWeek, setStartWeek] = useState(0);
+  const [endWeek, setEndWeek] = useState(0);
   const [restTime, setRest] = useState(0);
   const [workTime, setWork] = useState(0);
   const [norWorHours, setNormal] = useState(0);
@@ -44,9 +46,23 @@ export default function EmployeeInfo({ navigation, route }) {
   const [loading, setLoading] = useState(true);
 
   const [isNone, setIsNone] = useState(true);
-  const [isCheckoutNone, setIsCheckoutNoneNone] = useState(true);
+  const [isCheckoutNone, setIsCheckoutNone] = useState(true);
 
   const [workInfo, setWorkInfo] = useState({});
+
+  const [weekData, setWeekData] = useState([0, 0, 0, 0, 0, 0, 0]);
+  const labels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+  const data = {
+    labels: labels,
+    datasets: [
+      {
+        data: weekData,
+        color: (opacity = 1) => `rgba(77, 169, 255, ${opacity})`,
+      },
+    ],
+    legend: ["Thời gian làm trong tuần"],
+  };
+
   let customDatesStyles = [
     {
       startDate: cur_day,
@@ -54,94 +70,91 @@ export default function EmployeeInfo({ navigation, route }) {
     },
   ];
 
-  const reset = (date, totalWorkInfo) => {
-    // updateCurr_day(date);
-    let rest_temp = 0;
-    // console.log(cur_day);
-    let currentDayFormated = moment(date).format('YYYY-MM-DD');
-    let workPerDay = {};
-    for (let i = 0; i < totalWorkInfo.length; i++){
-      let day = totalWorkInfo[i].date;
-      workPerDay[day] = totalWorkInfo[i];
+  const calculateWorkTime = (check_in_time, check_out_time) => {
+    let work_normal, work_extra, rest_time, total_work_time = 0;
+    if (parseInt(moment.unix(check_in_time).format('HH'), 10) < 12){
+      if (parseInt(moment.unix(check_out_time).format('HH'), 10) >= 13){
+        rest_time = 3600;
+      }
+      else if (parseInt(moment.unix(check_out_time).format('HH'), 10) < 12){
+        rest_time = 0;
+      }
+      else{
+        let min_rest = parseInt(moment.unix(check_out_time).minutes(), 10);
+        let sec_rest = parseInt(moment.unix(check_out_time).seconds(), 10);
+        let totalSec_rest = min_rest*60 + sec_rest;
+
+        rest_time = totalSec_rest;
+      }
     }
-    if (workPerDay.hasOwnProperty(currentDayFormated)){
-      if (workPerDay[currentDayFormated].check_out !== null){
-        setIsCheckoutNoneNone(false);
-      }
-      setWorkInfo(workPerDay[currentDayFormated]);
-      if (parseInt(moment.unix(workPerDay[currentDayFormated].check_in).format('HH'), 10) < 12){
-        if (parseInt(moment.unix(workPerDay[currentDayFormated].check_out).format('HH'), 10) > 13){
-          console.log(moment.utc(3600*1000).format('HH:mm:ss'))
-          setRest(3600);
-          rest_temp = 3600;
-          // setRest(moment.unix(workPerDay[currentDayFormated].check_out) - moment.unix(workPerDay[currentDayFormated].check_in));
-        }
-        else if (parseInt(moment.unix(workPerDay[currentDayFormated].check_out).format('HH'), 10) < 12){
-          setRest(0);
-          rest_temp = 0;
-        }
-        else{
-          let min = parseInt(moment.unix(workPerDay[currentDayFormated].check_out).minutes(), 10);
-          let sec = parseInt(moment.unix(workPerDay[currentDayFormated].check_out).seconds(), 10);
-          let totalSec = min*60 + sec;
-          setRest(3600 - totalSec);
-          rest_temp = 3600 - totalSec;
-        }
-      }
-      else if (parseInt(moment.unix(workPerDay[currentDayFormated].check_in).format('HH'), 10) >= 13){
-        setRest(0);
-        rest_temp = 0
-      }
-      else{
-        console.log(moment.unix(workPerDay[currentDayFormated].check_in).format('HH:mm:ss'))
-        if (parseInt(moment.unix(workPerDay[currentDayFormated].check_out).format('HH'), 10) > 13){
-          let min = parseInt(moment.unix(workPerDay[currentDayFormated].check_in).minutes(), 10);
-          let sec = parseInt(moment.unix(workPerDay[currentDayFormated].check_in).seconds(), 10);
-          let totalSec = min*60 + sec;
-          // setRest(totalSec);
-          setRest(3600 - totalSec);
-          rest_temp = 3600 - totalSec
-          // setRest(moment.unix(workPerDay[currentDayFormated].check_out) - moment.unix(workPerDay[currentDayFormated].check_in));
-        }
-        else{
-          let min_out = parseInt(moment.unix(workPerDay[currentDayFormated].check_out).minutes(), 10);
-          let sec_out = parseInt(moment.unix(workPerDay[currentDayFormated].check_out).seconds(), 10);
-          let totalSec_out = min_out*60 + sec_out;
-
-          let min_in = parseInt(moment.unix(workPerDay[currentDayFormated].check_in).minutes(), 10);
-          let sec_in = parseInt(moment.unix(workPerDay[currentDayFormated].check_in).seconds(), 10);
-          let totalSec_in = min_out*60 + sec_in;
-          setRest(3600 - totalSec_in - totalSec_out);
-          rest_temp = 3600 - totalSec_in - totalSec_out;
-        }
-      }
-
-      // find work time
-      let ci = parseInt(moment.unix(workPerDay[currentDayFormated].check_in).hours(), 10)*3600 + parseInt(moment.unix(workPerDay[currentDayFormated].check_in).minutes(), 10)*60 + parseInt(moment.unix(workPerDay[currentDayFormated].check_in).seconds(), 10)
-      let co = parseInt(moment.unix(workPerDay[currentDayFormated].check_out).hours(), 10)*3600 + parseInt(moment.unix(workPerDay[currentDayFormated].check_out).minutes(), 10)*60 + parseInt(moment.unix(workPerDay[currentDayFormated].check_out).seconds(), 10)
-      let ex = 0;
-      let work_temp = co - ci - rest_temp
-      setWork(work_temp)
-      
-      // set normal
-      if (parseInt(moment.utc(work_temp*1000).hours()) >= 8){
-        ex = (parseInt(moment.utc(work_temp*1000).hours(), 10) - 8)*3600 + parseInt(moment.utc(work_temp*1000).minutes(), 10)*60 + parseInt(moment.utc(work_temp*1000).seconds(), 10)
-        setExtra(ex);
-      }
-      else{
-        setExtra(0);
-      }
-      setNormal(work_temp - ex);
-      setIsNone(false);
+    else if (parseInt(moment.unix(check_in_time).format('HH'), 10) >= 13){
+      rest_time = 0;
     }
     else{
-      setNormal(0);
-      setExtra(0);
-      setWorkInfo({})
-      setIsNone(true);
+      if (parseInt(moment.unix(check_out_time).format('HH'), 10) >= 13){
+        let min_rest = parseInt(moment.unix(check_in_time).minutes(), 10);
+        let sec_rest = parseInt(moment.unix(check_in_time).seconds(), 10);
+        let totalSec_rest = min_rest*60 + sec_rest;
+        
+        rest_time = 3600 - totalSec_rest;
+      }
+      else{
+        // console.log("here")
+        // Total second from time check out to 13:00
+        let min_rest_out = parseInt(moment.unix(check_out_time).minutes(), 10);
+        let sec_rest_out = parseInt(moment.unix(check_out_time).seconds(), 10);
+        let totalSec_rest_out = min_rest_out*60 + sec_rest_out;
+
+        // Total second from 12:00 to time check in
+        let min__rest_in = parseInt(moment.unix(check_in_time).minutes(), 10);
+        let sec_rest_in = parseInt(moment.unix(check_in_time).seconds(), 10);
+        let totalSec_rest_in = min__rest_in*60 + sec_rest_in;
+        
+        rest_time = totalSec_rest_out - totalSec_rest_in;
+      }
     }
+
+    // find work time = (number of seconds from 0 -> check out time) - (number of seconds from 0 -> check in time) 
+    let check_in_in_seconds = parseInt(moment.unix(check_in_time).hours(), 10)*3600 + parseInt(moment.unix(check_in_time).minutes(), 10)*60 + parseInt(moment.unix(check_in_time).seconds(), 10)
+    let check_out_in_seconds = parseInt(moment.unix(check_out_time).hours(), 10)*3600 + parseInt(moment.unix(check_out_time).minutes(), 10)*60 + parseInt(moment.unix(check_out_time).seconds(), 10)
+    total_work_time = check_out_in_seconds - check_in_in_seconds - rest_time
+    
+    // set normal
+    if (parseInt(moment.utc(total_work_time*1000).hours()) >= 8){
+      work_extra = (parseInt(moment.utc(total_work_time*1000).hours(), 10) - 8)*3600 + parseInt(moment.utc(total_work_time*1000).minutes(), 10)*60 + parseInt(moment.utc(total_work_time*1000).seconds(), 10)
+    }
+    else{
+      work_extra = 0;
+    }
+    work_normal = total_work_time - work_extra;
+
+    return [work_normal, work_extra, rest_time, total_work_time];
   }
 
+  const calculateWeekTime = (date, work_per_day) => {
+    let total_in_week = 0
+    let current_week = moment(new Date(date)).week();
+    let week_from = moment(new Date(date)).startOf("week").format("DD/MM")
+    let week_to = moment(new Date(date)).endOf("week").format("DD/MM")
+
+    let temp_weekData = [0, 0, 0, 0, 0, 0, 0];
+    for (const key in work_per_day){
+      if (work_per_day[key].check_out == null) 
+        continue;
+      if (moment(new Date(key)).week() == current_week){
+        total_in_week += calculateWorkTime(work_per_day[key].check_in, work_per_day[key].check_out)[3];
+        
+        temp_weekData[moment(new Date(key)).day()] = calculateWorkTime(work_per_day[key].check_in, work_per_day[key].check_out)[3];
+      }
+    }
+    setWeekData(temp_weekData);
+
+    return [total_in_week, week_from, week_to]
+  }
+
+  // console.log(moment(new Date("2023-12-13")).week())
+
+  
   const fetchFunction = async () =>{
     fetch(EmpInforURL)
     .then((data) => data.json())
@@ -159,8 +172,54 @@ export default function EmployeeInfo({ navigation, route }) {
     }, 3000)
     return () => clearInterval(intervalFetch);
   },[])
+  
+  const reset = (date, totalWorkInfo) => {
+    let currentDayFormated = moment(date).format('YYYY-MM-DD');
+    let workPerDay = {};
+    for (let i = 0; i < totalWorkInfo.length; i++){
+      let day = totalWorkInfo[i].date;
+      workPerDay[day] = totalWorkInfo[i];
+    }
+
+    // Total work time in week
+    setWeek(calculateWeekTime(date, workPerDay)[0]);
+    setStartWeek(calculateWeekTime(date, workPerDay)[1]);
+    setEndWeek(calculateWeekTime(date, workPerDay)[2]);
+
+    if (workPerDay.hasOwnProperty(currentDayFormated)){
+      if (workPerDay[currentDayFormated].check_out !== null){
+        setIsCheckoutNone(false);
+        setWorkInfo(workPerDay[currentDayFormated]);
+        let calculated_time = calculateWorkTime(workPerDay[currentDayFormated].check_in, workPerDay[currentDayFormated].check_out);
+        let work_normal = calculated_time[0] 
+        let work_extra = calculated_time[1] 
+        let rest_time = calculated_time[2] 
+        let total_work_time = calculated_time[3] 
+  
+        setNormal(work_normal);
+        setExtra(work_extra);
+        setWork(total_work_time);
+        setRest(rest_time);
+        setIsNone(false);
+      }
+      else{
+        setNormal(0);
+        setExtra(0);
+        setWork(0);
+        setRest(0);
+      }
+    }
+    else{      
+      setNormal(0);
+      setExtra(0);
+      setWork(0);
+      setRest(0);
+      setIsNone(true);
+    }
+  }
 
   useEffect(() => {
+
     reset(cur_day, totalWorkInfo);
   }, [cur_day, totalWorkInfo])
 
@@ -187,6 +246,9 @@ export default function EmployeeInfo({ navigation, route }) {
                 highlightDateNameStyle={{ color: "white" }}
                 onDateSelected={(date) => {
                   updateCurr_day(date);
+                  console.log(cur_day);
+                  console.log(totalWorkInfo);
+                  // console.log(date);
                 }}
                 customDatesStyles={customDatesStyles}
             />
@@ -195,16 +257,19 @@ export default function EmployeeInfo({ navigation, route }) {
           { loading ? (<Text style={styles.loadingText}>Đang tải thông tin nhân viên ... </Text>) : (
           <View style={{height: '100%'}}>
 
-            {/* <View style={styles.totalHours}>
+            <View style={styles.totalHours}>
               <View style={{borderWidth: 0, justifyContent: 'center', width: '75%'}}>
                 <Text style={{fontSize: 16, borderWidth: 0, paddingLeft: 20, fontWeight: '600'}}>
-                  Tổng thời gian tuần này
+                  Tổng thời gian trong tuần từ
+                </Text>
+                <Text style={{fontSize: 16, borderWidth: 0, paddingLeft: 20, fontWeight: '600'}}>
+                  {startWeek} - {endWeek}
                 </Text>
               </View>
               <View style={{borderWidth: 0, justifyContent: 'center', width: '25%', alignItems: 'center'}}> 
-                <Text style={{borderWidth: 0, color: '#8189B0', fontWeight: 'bold'}}>{totalHours}</Text>
+                {workTime_inWeek == 0 ? (<Text style={{fontSize: 17, borderWidth: 0, color: '#8189B0', fontWeight: 'bold'}}>--</Text>) : (<Text style={{fontSize: 17, borderWidth: 0, color: '#8189B0', fontWeight: 'bold'}}>{moment.utc(workTime_inWeek*1000).format("HH:mm:ss")}</Text>)}
               </View>
-            </View> */}
+            </View>
 
             {/* Total Salary Hours */}
             <View style={styles.totalSalaryHours}>
@@ -217,17 +282,36 @@ export default function EmployeeInfo({ navigation, route }) {
                   <View style={{width: '50%', borderWidth: 0, justifyContent: 'center', alignItems: 'center'}}>
                     <Text style={{fontSize: 16, marginVertical: 3}}>Giờ làm bình thường</Text>
                     {
-                      (isCheckoutNone || norWorHours == 0) ? (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>--</Text>) : (<Text style={{fontSize: 16, marginVertical: 3, color: '#8189B0', fontWeight: 'bold'}}>{moment.utc(norWorHours*1000).format('HH:mm:ss')}</Text>)
+                      (isCheckoutNone || isNone || norWorHours == 0) ? (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>--</Text>) : (<Text style={{fontSize: 16, marginVertical: 3, color: '#8189B0', fontWeight: 'bold'}}>{moment.utc(norWorHours*1000).format('HH:mm:ss')}</Text>)
                     }
                   </View>
                   <View style={{width: '50%', borderWidth: 0, justifyContent: 'center', alignItems: 'center'}}>
                     <Text style={{fontSize: 16, marginVertical: 3}}>Giờ làm tăng ca</Text>
                     {
-                      (isCheckoutNone || extrWorkHours == 0) ? (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>--</Text>) : (<Text style={{fontSize: 16, marginVertical: 3, color: '#8189B0', fontWeight: 'bold'}}>{moment.utc(extrWorkHours*1000).format('HH:mm:ss')}</Text>)
+                      (isCheckoutNone || isNone || extrWorkHours == 0) ? (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>--</Text>) : (<Text style={{fontSize: 16, marginVertical: 3, color: '#8189B0', fontWeight: 'bold'}}>{moment.utc(extrWorkHours*1000).format('HH:mm:ss')}</Text>)
                     }
                   </View>
               </View>
             </View>
+
+            <View style={styles.chartContainer}>
+              <LineChart
+                data={data}
+                width={Dimensions.get("window").width * 0.9}
+                height={220}
+                chartConfig={{
+                  backgroundColor: "#ffffff",
+                  backgroundGradientFrom: "#ffffff",
+                  backgroundGradientTo: "#ffffff",
+                  decimalPlaces: 0,
+                  color: (opacity = 1) => `rgba(77, 169, 255, ${opacity})`,
+                  labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                }}
+                bezier
+                formatYLabel={(y_value) => (y_value/3600.0).toFixed(2)}
+                style={styles.chart}
+              />
+      </View>
           </View>)}
         </View>
       </View>
@@ -271,6 +355,22 @@ const styles = StyleSheet.create({
   loadingText: {alignSelf: 'center',
                 fontSize: 20, 
                 fontWeight: 'bold',
-              color: '#8f8f8f'}
+              color: '#8f8f8f'},
+  chartContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  chart: {
+    width: "90%",
+    borderRadius: 15,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.32,
+    shadowRadius: 5.46,
+    elevation: 9,
+  },
 
 });

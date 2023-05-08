@@ -85,9 +85,6 @@ export default function ManageDevice({ navigation, route }) {
       const reply = await response.json();
       console.log(reply)
     }
-    // const newSwitches = [...isEnabled];
-    // newSwitches[index] = !newSwitches[index];
-    // setIsEnabled(newSwitches);
   }
   const changeFanSpeed = async () => {
     let newFanSpeed = fanSpeed + 25;
@@ -125,58 +122,58 @@ export default function ManageDevice({ navigation, route }) {
     const reply = await response.json();
     console.log(reply)
   }
-  const [lightValue, setLightValue] = useState(0);
-  const [hallwaysLightValue, setHallwaysLightValue] = useState(0);
 
-  useEffect(() => {
-    const myFunc = async() => {
-      try {
-        const [res1, res2, res3] = await Promise.all([fetch(light_url), fetch(hallways_light_url), fetch(fan_url)]);
-        const [json1, json2, json3] = await Promise.all([res1.json(), res2.json(), res3.json()]);
-        
-        // console.log("Trang thai hien tai cua den van phong: " + json1.last_value + "\nButton state: " + toString(light1))
-        if (json1.last_value == "1"){
-          setLight1(true);
-        }
-        else if (json1.last_value == "0"){
-          setLight1(false);
-        }
-        
-        // console.log("Trang thai hien tai cua den hanh lang: " + json2.last_value + "\nButton state: " + toString(light2))
-        if (json2.last_value == "1"){
-          setLight2(true);
-        }
-        else if (json2.last_value == "0"){
-          setLight2(false);
-        }
-
-        setSpeed(parseInt(json3.last_value, 10));
-        if (json3.last_value == '0'){
-          setFanURL(require('../../assets/fanspeed/level0.png'))
-        }
-        else if (json3.last_value == '25'){
-          setFanURL(require('../../assets/fanspeed/level1.png'))
-        }
-        else if (json3.last_value == '50'){
-          setFanURL(require('../../assets/fanspeed/level2.png'))
-        }
-        else if (json3.last_value == '75'){
-          setFanURL(require('../../assets/fanspeed/level3.png'))
-        }
-        else if (json3.last_value == '100'){
-          setFanURL(require('../../assets/fanspeed/level4.png'))
-        }
-
-        // console.log("UPDATE");
+  const myFunc = async() => {
+    try {
+      const [res1, res2, res3] = await Promise.all([fetch(light_url), fetch(hallways_light_url), fetch(fan_url)]);
+      const [json1, json2, json3] = await Promise.all([res1.json(), res2.json(), res3.json()]);
+      
+      // console.log("Trang thai hien tai cua den van phong: " + json1.last_value + "\nButton state: " + toString(light1))
+      if (json1.last_value == "1"){
+        setLight1(true);
       }
-      catch(err){
-        // console.log(err);
-      };
+      else if (json1.last_value == "0"){
+        setLight1(false);
+      }
+      
+      // console.log("Trang thai hien tai cua den hanh lang: " + json2.last_value + "\nButton state: " + toString(light2))
+      if (json2.last_value == "1"){
+        setLight2(true);
+      }
+      else if (json2.last_value == "0"){
+        setLight2(false);
+      }
+
+      setSpeed(parseInt(json3.last_value, 10));
+      if (json3.last_value == '0'){
+        setFanURL(require('../../assets/fanspeed/level0.png'))
+      }
+      else if (json3.last_value == '25'){
+        setFanURL(require('../../assets/fanspeed/level1.png'))
+      }
+      else if (json3.last_value == '50'){
+        setFanURL(require('../../assets/fanspeed/level2.png'))
+      }
+      else if (json3.last_value == '75'){
+        setFanURL(require('../../assets/fanspeed/level3.png'))
+      }
+      else if (json3.last_value == '100'){
+        setFanURL(require('../../assets/fanspeed/level4.png'))
+      }
+
+      // console.log("UPDATE");
+    }
+    catch(err){
+      // console.log(err);
     };
+  };
+  useEffect(() => {
     myFunc();
-    setInterval(() => {
+    const intervalFetch = setInterval(() => {
       myFunc();
-    }, 4000);
+    }, 500);
+
+    return () => clearInterval(intervalFetch);
   }, [])
 
   return (
