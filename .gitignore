@@ -9,8 +9,6 @@ npm-debug.*
 *.mobileprovision
 *.orig.*
 web-build/
-assets/ada_key.txt
-src/core/const.js
 
 # macOS
 .DS_Store
