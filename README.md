@@ -1,2 +1,2 @@
-# Multidisciplinary Project - Oriented Artificial Intelligence
+# Multidisciplinary Project - Artificial Intelligence
 Project name: PASiC Smart Home
