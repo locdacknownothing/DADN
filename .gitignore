@@ -9,7 +9,7 @@ npm-debug.*
 *.mobileprovision
 *.orig.*
 web-build/
-assets/
+assets/ada_key.txt
 src/core/const.js
 
 # macOS
