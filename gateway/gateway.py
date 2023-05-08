@@ -18,20 +18,22 @@ AIO_USERNAME = "Vyvy0812"
 
 
 def connected(client):
-    print("Ket noi thanh cong...")
-    for feed in AIO_FEED_ID:
-        client.subscribe(feed)
-    
+    try:
+        print("Đã kết nối thành công!!...")
+        for feed in AIO_FEED_ID:
+            client.subscribe(feed)
+    except:
+        print("Kết nối thất bại!!...")
+        
 def subscribe(client, userdata, mid, granted_qos):
-    print("Subscribe thanh cong...")
+    print("Đăng ký thành công!!...")
     
 def disconnected(client):
-    print("Ngat ket noi...")
+    print("Ngắt kết nối...")
     sys.exit(1)
     
 def message(client, feed_id, payload):
-    print("Nhan du lieu " + feed_id + ": " + payload)
-    print(type(payload))
+    print("Nhận dữ liệu + feed_id + ": " + payload)
     if feed_id == "pasic-smart-office.offices-light":
         if payload == "1":
             writeData("A")
@@ -62,12 +64,38 @@ client.on_subscribe = subscribe
 client.connect()
 client.loop_background()
 
+counter = 5
+type_data = 0
+
 while True:
     
-    # temp = random.randint(0, 50)
-    # print("Cap nhat nhiet do: ", temp)
-    # client.publish("pasic-smart-office.temperature", temp)
-    
-    readSerial(client)
+    if counter <= 0:
+        counter = 5
+        if type_data == 0:
+            temp = random.randint(0, 50)
+            print("Cập nhật nhiet do: ", temp)
+            client.publish("pasic-smart-office.temperature", temp)
+            type_data = 1
+        elif type_data == 1:
+            humi = random.randint(0, 100)
+            print("Cập nhật do am: ", humi)
+            client.publish("pasic-smart-office.humidity", humi)
+            type_data = 2
+            
+        elif type_data == 2:
+            bright = random.randint(0, 100)
+            print("Cập nhật anh sang: ", bright)
+            client.publish("pasic-smart-office.brightness", bright)
+            type_data = 3
+            
+        elif type_data == 3:
+            noise = random.randint(0, 100)
+            print("Cập nhật am thanh: ", noise)
+            client.publish("pasic-smart-office.noise", noise)
+            type_data = 0
+        
+            
+    counter = counter - 1
+    # readSerial(client)
     
     time.sleep(1)
