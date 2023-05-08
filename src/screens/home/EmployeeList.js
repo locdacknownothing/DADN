@@ -17,6 +17,9 @@ export default function EmployeeList({ navigation }) {
     },
   ];
 
+  // let week = moment(cur_day).week()
+  // console.log(week)  
+
   const [searchText, updateSearchText] = useState("");
   
   const getEmpURL = "http://" + IPADDRESS + "/attcheck/";
@@ -126,14 +129,14 @@ export default function EmployeeList({ navigation }) {
           filter_result.push(finalRes[i]);
         }
       }
-      console.log(searchText)
+      // console.log(searchText)
     }
     else{
-      console.log("no text")
+      // console.log("no text")
       filter_result = finalRes;
     }
   
-    console.log(finalRes);
+    // console.log(finalRes);
     return filter_result;
   }
   

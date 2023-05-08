@@ -18,7 +18,6 @@ let TIMEOUT_MS = 5000;
 
 export default function HomeScreen({ navigation, route }) {
   console.log(route);
-  // const hard_url2 = `../../../server/${route.params.img_url}`;
   const img_url = (img_urls[route.params.id]);
   const name = route.params.name;
   const role = route.params.role;
@@ -28,35 +27,28 @@ export default function HomeScreen({ navigation, route }) {
   const [humiValue, setHumiValue] = useState(0);
   const [brightValue, setBrightValue] = useState(0);
   const [noiseValue, setNoiseValue] = useState(0);
-  const [lightValue, setLightValue] = useState(0);
-  const [hallwaysLightValue, setHallwaysLightValue] = useState(0);
-  const [fanValue, setFanValue] = useState(0);
-
-  useEffect(() => {
-    const myFunc = async() => {
-      try {
-        let [data1, data2, data3, data4] = await Promise.all([fetch(temp_url).then(res1 => res1.json()).then(data1 => setTempValue(data1.last_value)),
-                                                              fetch(humi_url).then(res2 => res2.json()).then(data2 => setHumiValue(data2.last_value)),
-                                                              fetch(brightness_url).then(res3 => res3.json()).then(data3 => setBrightValue(data3.last_value)),
-                                                              fetch(noise_url).then(res4 => res4.json()).then(data4 => setNoiseValue(data4.last_value))]);
-        // let [data1, data2, data3, data4] = [res1.json(), res2.json(), res3.json(), res4.json()];
-        // let [] = await Promise.all([setTempValue(data1.last_value),
-        // setHumiValue(data2.last_value),
-        // setBrightValue(data3.last_value),
-        // setNoiseValue(data4.last_value)])
-        // setLightValue(data5.last_value);
-        // setHallwaysLightValue(data6.last_value);
-        // setFanValue(data7.last_value);
-        // console.log("UPDATE");
-      }
-      catch(err){
-        console.log(err);
-      };
+  
+  const myFunc = async() => {
+    try {
+      let [data1, data2, data3, data4] = await Promise.all([fetch(temp_url).then(res1 => res1.json()).then(data1 => setTempValue(data1.last_value)),
+                                                            fetch(humi_url).then(res2 => res2.json()).then(data2 => setHumiValue(data2.last_value)),
+                                                            fetch(brightness_url).then(res3 => res3.json()).then(data3 => setBrightValue(data3.last_value)),
+                                                            fetch(noise_url).then(res4 => res4.json()).then(data4 => setNoiseValue(data4.last_value))]);
+      // console.log("UPDATE");
+    }
+    catch(err){
+      console.log(err);
     };
+  };
+  
+  useEffect(() => {
     myFunc();
-    setInterval(() => {
+
+    const intervalFetch = setInterval(() => {
       myFunc();
-    }, 10000);
+    }, 3000);
+
+    return () => clearInterval(intervalFetch);
   }, [])
 
   return (

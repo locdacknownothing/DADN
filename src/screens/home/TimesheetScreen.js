@@ -43,13 +43,12 @@ export default function TimesheetScreen({navigation, route}) {
   ];
 
   const [isNone, setIsNone] = useState(true);
-  const [isCheckoutNone, setIsCheckoutNoneNone] = useState(true);
+  const [isCheckoutNone, setIsCheckoutNone] = useState(true);
 
   const [workInfo, setWorkInfo] = useState({});
 
   let empInfoURL = baseURL.concat(id); 
 
-  // console.log(empInfoURL)
   const fetchFunction = async () =>{
     try{
       const res = await fetch(empInfoURL);
@@ -74,9 +73,68 @@ export default function TimesheetScreen({navigation, route}) {
 
   // console.log(totalWorkInfo);
 
+  const calculateWorkTime = (check_in_time, check_out_time) => {
+    let work_normal, work_extra, rest_time, total_work_time = 0;
+    if (parseInt(moment.unix(check_in_time).format('HH'), 10) < 12){
+      if (parseInt(moment.unix(check_out_time).format('HH'), 10) >= 13){
+        rest_time = 3600;
+      }
+      else if (parseInt(moment.unix(check_out_time).format('HH'), 10) < 12){
+        rest_time = 0;
+      }
+      else{
+        let min_rest = parseInt(moment.unix(check_out_time).minutes(), 10);
+        let sec_rest = parseInt(moment.unix(check_out_time).seconds(), 10);
+        let totalSec_rest = min_rest*60 + sec_rest;
+
+        rest_time = totalSec_rest;
+      }
+    }
+    else if (parseInt(moment.unix(check_in_time).format('HH'), 10) >= 13){
+      rest_time = 0;
+    }
+    else{
+      if (parseInt(moment.unix(check_out_time).format('HH'), 10) >= 13){
+        let min_rest = parseInt(moment.unix(check_in_time).minutes(), 10);
+        let sec_rest = parseInt(moment.unix(check_in_time).seconds(), 10);
+        let totalSec_rest = min_rest*60 + sec_rest;
+        
+        rest_time = 3600 - totalSec_rest;
+      }
+      else{
+        // console.log("here")
+        // Total second from time check out to 13:00
+        let min_rest_out = parseInt(moment.unix(check_out_time).minutes(), 10);
+        let sec_rest_out = parseInt(moment.unix(check_out_time).seconds(), 10);
+        let totalSec_rest_out = min_rest_out*60 + sec_rest_out;
+
+        // Total second from 12:00 to time check in
+        let min__rest_in = parseInt(moment.unix(check_in_time).minutes(), 10);
+        let sec_rest_in = parseInt(moment.unix(check_in_time).seconds(), 10);
+        let totalSec_rest_in = min__rest_in*60 + sec_rest_in;
+        
+        rest_time = totalSec_rest_out - totalSec_rest_in;
+      }
+    }
+
+    // find work time = (number of seconds from 0 -> check out time) - (number of seconds from 0 -> check in time) 
+    let check_in_in_seconds = parseInt(moment.unix(check_in_time).hours(), 10)*3600 + parseInt(moment.unix(check_in_time).minutes(), 10)*60 + parseInt(moment.unix(check_in_time).seconds(), 10)
+    let check_out_in_seconds = parseInt(moment.unix(check_out_time).hours(), 10)*3600 + parseInt(moment.unix(check_out_time).minutes(), 10)*60 + parseInt(moment.unix(check_out_time).seconds(), 10)
+    total_work_time = check_out_in_seconds - check_in_in_seconds - rest_time
+    
+    // set normal
+    if (parseInt(moment.utc(total_work_time*1000).hours()) >= 8){
+      work_extra = (parseInt(moment.utc(total_work_time*1000).hours(), 10) - 8)*3600 + parseInt(moment.utc(total_work_time*1000).minutes(), 10)*60 + parseInt(moment.utc(total_work_time*1000).seconds(), 10)
+    }
+    else{
+      work_extra = 0;
+    }
+    work_normal = total_work_time - work_extra;
+
+    return [work_normal, work_extra, rest_time, total_work_time];
+  }
+
   const reset = (date, totalWorkInfo) => {
-    let rest_temp = 0;
-    // console.log(cur_day);
     let currentDayFormated = moment(date).format('YYYY-MM-DD');
     let workPerDay = {};
     for (let i = 0; i < totalWorkInfo.length; i++){
@@ -85,83 +143,25 @@ export default function TimesheetScreen({navigation, route}) {
     }
     if (workPerDay.hasOwnProperty(currentDayFormated)){
       if (workPerDay[currentDayFormated].check_out !== null){
-        setIsCheckoutNoneNone(false);
+        setIsCheckoutNone(false);
       }
 
       setWorkInfo(workPerDay[currentDayFormated]);
-      if (parseInt(moment.unix(workPerDay[currentDayFormated].check_in).format('HH'), 10) < 12){
-        if (parseInt(moment.unix(workPerDay[currentDayFormated].check_out).format('HH'), 10) > 13){
-          console.log(moment.utc(3600*1000).format('HH:mm:ss'))
-          setRest(3600);
-          rest_temp = 3600;
-          // setRest(moment.unix(workPerDay[currentDayFormated].check_out) - moment.unix(workPerDay[currentDayFormated].check_in));
-        }
-        else if (parseInt(moment.unix(workPerDay[currentDayFormated].check_out).format('HH'), 10) < 12){
-          setRest(0);
-          rest_temp = 0;
-        }
-        else{
-          let min = parseInt(moment.unix(workPerDay[currentDayFormated].check_out).minutes(), 10);
-          let sec = parseInt(moment.unix(workPerDay[currentDayFormated].check_out).seconds(), 10);
-          let totalSec = min*60 + sec;
-          setRest(3600 - totalSec);
-          rest_temp = 3600 - totalSec;
-        }
-      }
-      else if (parseInt(moment.unix(workPerDay[currentDayFormated].check_in).format('HH'), 10) >= 13){
-        setRest(0);
-        rest_temp = 0
-      }
-      else{
-        console.log(moment.unix(workPerDay[currentDayFormated].check_in).format('HH:mm:ss'))
-        if (parseInt(moment.unix(workPerDay[currentDayFormated].check_out).format('HH'), 10) > 13){
-          let min = parseInt(moment.unix(workPerDay[currentDayFormated].check_in).minutes(), 10);
-          let sec = parseInt(moment.unix(workPerDay[currentDayFormated].check_in).seconds(), 10);
-          let totalSec = min*60 + sec;
-          // setRest(totalSec);
-          setRest(3600 - totalSec);
-          rest_temp = 3600 - totalSec
-          // setRest(moment.unix(workPerDay[currentDayFormated].check_out) - moment.unix(workPerDay[currentDayFormated].check_in));
-        }
-        else{
-          let min_out = parseInt(moment.unix(workPerDay[currentDayFormated].check_out).minutes(), 10);
-          let sec_out = parseInt(moment.unix(workPerDay[currentDayFormated].check_out).seconds(), 10);
-          let totalSec_out = min_out*60 + sec_out;
+      let calculated_time = calculateWorkTime(workPerDay[currentDayFormated].check_in, workPerDay[currentDayFormated].check_out);
+      let work_normal = calculated_time[0] 
+      let work_extra = calculated_time[1] 
+      let rest_time = calculated_time[2] 
+      let total_work_time = calculated_time[3] 
 
-          let min_in = parseInt(moment.unix(workPerDay[currentDayFormated].check_in).minutes(), 10);
-          let sec_in = parseInt(moment.unix(workPerDay[currentDayFormated].check_in).seconds(), 10);
-          let totalSec_in = min_out*60 + sec_in;
-          setRest(3600 - totalSec_in - totalSec_out);
-          rest_temp = 3600 - totalSec_in - totalSec_out;
-        }
-      }
-
-      // find work time
-      let ci = parseInt(moment.unix(workPerDay[currentDayFormated].check_in).hours(), 10)*3600 + parseInt(moment.unix(workPerDay[currentDayFormated].check_in).minutes(), 10)*60 + parseInt(moment.unix(workPerDay[currentDayFormated].check_in).seconds(), 10)
-      let co = parseInt(moment.unix(workPerDay[currentDayFormated].check_out).hours(), 10)*3600 + parseInt(moment.unix(workPerDay[currentDayFormated].check_out).minutes(), 10)*60 + parseInt(moment.unix(workPerDay[currentDayFormated].check_out).seconds(), 10)
-      let ex = 0;
-      let work_temp = co - ci - rest_temp
-      setWork(work_temp)
-      
-      // set normal
-      if (parseInt(moment.utc(work_temp*1000).hours()) >= 8){
-        ex = (parseInt(moment.utc(work_temp*1000).hours(), 10) - 8)*3600 + parseInt(moment.utc(work_temp*1000).minutes(), 10)*60 + parseInt(moment.utc(work_temp*1000).seconds(), 10)
-        setExtra(ex);
-      }
-      else{
-        setExtra(0);
-      }
-      setNormal(work_temp - ex);
+      setNormal(work_normal);
+      setExtra(work_extra);
+      setWork(total_work_time);
+      setRest(rest_time);
       setIsNone(false);
     }
     else{
-      setNormal(0);
-      setExtra(0);
-      setWorkInfo({})
       setIsNone(true);
     }
-    // console.log(workPerDay[currentDayFormated]);
-    // console.log(workInfo)
   }
 
   return (
@@ -233,13 +233,13 @@ export default function TimesheetScreen({navigation, route}) {
                     <View style={{width: '50%', height: 80, borderWidth: 0, justifyContent: 'center', alignItems: 'center'}}>
                       <Text style={{fontSize: 16, marginVertical: 2}}>Thời gian nghỉ</Text>
                       {
-                        (isNone || isCheckoutNone) ? (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>--</Text>) : (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>{moment.utc(restTime*1000).format('HH:mm:ss')}</Text>)
+                        (isNone || isCheckoutNone || restTime == 0) ? (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>--</Text>) : (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>{moment.utc(restTime*1000).format('HH:mm:ss')}</Text>)
                       }
                     </View>
                     <View style={{width: '50%', height: 80, borderWidth: 0, justifyContent: 'center', alignItems: 'center'}}>
                       <Text style={{fontSize: 16, marginVertical: 2}}>Thời gian làm việc</Text>
                       {
-                        (isNone || isCheckoutNone) ? (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>--</Text>) : (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>{moment.utc(workTime*1000).format('HH:mm:ss')}</Text>)
+                        (isNone || isCheckoutNone || workTime == 0) ? (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>--</Text>) : (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>{moment.utc(workTime*1000).format('HH:mm:ss')}</Text>)
                       }
                     </View>
                 </View>
@@ -258,14 +258,14 @@ export default function TimesheetScreen({navigation, route}) {
                   <View style={{width: '50%', borderWidth: 0, justifyContent: 'center', alignItems: 'center'}}>
                     <Text style={{fontSize: 16, marginVertical: 3}}>Giờ làm bình thường</Text>
                     {
-                      (isNone || isCheckoutNone) ? (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>--</Text>) : (<Text style={{fontSize: 16, marginVertical: 3, color: '#8189B0', fontWeight: 'bold'}}>{moment.utc(norWorHours*1000).format('HH:mm:ss')}</Text>)
+                      (isNone || isCheckoutNone || norWorHours == 0) ? (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>--</Text>) : (<Text style={{fontSize: 16, marginVertical: 3, color: '#8189B0', fontWeight: 'bold'}}>{moment.utc(norWorHours*1000).format('HH:mm:ss')}</Text>)
                     }
                     
                   </View>
                   <View style={{width: '50%', borderWidth: 0, justifyContent: 'center', alignItems: 'center'}}>
                     <Text style={{fontSize: 16, marginVertical: 3}}>Giờ làm tăng ca</Text>
                     {
-                      (isNone || isCheckoutNone) ? (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>--</Text>) : (
+                      (isNone || isCheckoutNone || extrWorkHours == 0) ? (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>--</Text>) : (
 
                         <Text style={{fontSize: 16, marginVertical: 3, color: '#8189B0', fontWeight: 'bold'}}>{moment.utc(extrWorkHours*1000).format('HH:mm:ss')}</Text>
                       )
