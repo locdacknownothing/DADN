@@ -8,13 +8,12 @@ from uart import *
 import cv2
 
 with open("../assets/ada_key.txt", "r") as f:
-    AIO_KEY = f.read()
+    MY_KEY = f.read()
     f.close()
 
 
 AIO_FEED_ID = ["pasic-smart-office.offices-light", "pasic-smart-office.hallways-light", "pasic-smart-office.fan"]
 AIO_USERNAME = "Vyvy0812"
-# AIO_KEY = "aio_qEMb76O0TZ9UArfQsG4ejkCpr0O4"
 
 
 
@@ -55,7 +54,7 @@ def message(client, feed_id, payload):
         elif payload == "100":
             writeData("4")
 
-client = MQTTClient(AIO_USERNAME, AIO_KEY)
+client = MQTTClient(AIO_USERNAME, MY_KEY)
 client.on_connect = connected
 client.on_disconnect = disconnected
 client.on_message = message

@@ -11,9 +11,7 @@ import { theme } from "../../core/theme";
 import { Image } from "react-native-elements";
 import { json } from "react-router-dom";
 import { and, ceil } from "react-native-reanimated";
-import { img_urls, AIO_KEY } from "../../core/const";
-
-// const AIO_KEY = 'aio_qEMb76O0TZ9UArfQsG4ejkCpr0O4';
+import { img_urls, MY_KEY } from "../../core/const";
 
 const NUM_DEVICES = 2
 
@@ -60,7 +58,7 @@ export default function ManageDevice({ navigation, route }) {
       const options = {
         method: 'POST',
         headers: {
-          'X-AIO-KEY': AIO_KEY,
+          'X-AIO-KEY': MY_KEY,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data)
@@ -77,7 +75,7 @@ export default function ManageDevice({ navigation, route }) {
       const options = {
         method: 'POST',
         headers: {
-          'X-AIO-KEY': AIO_KEY,
+          'X-AIO-KEY': MY_KEY,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data)
@@ -117,7 +115,7 @@ export default function ManageDevice({ navigation, route }) {
     const options = {
       method: 'POST',
       headers: {
-        'X-AIO-KEY': AIO_KEY,
+        'X-AIO-KEY': MY_KEY,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(data)
