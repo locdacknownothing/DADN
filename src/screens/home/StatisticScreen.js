@@ -32,7 +32,7 @@ export default function StatisticScreen({ navigation }) {
   const [humiValue, setHumiValue] = useState(0);
   const [brightValue, setBrightValue] = useState(0);
   const [noiseValue, setNoiseValue] = useState(0);
-  const RESET_TIME = 10000;
+  const RESET_TIME = 3000;
 
   useEffect(() => {
     const fetchFunction = async() => {

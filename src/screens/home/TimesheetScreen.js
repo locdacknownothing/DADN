@@ -25,7 +25,9 @@ export default function TimesheetScreen({navigation, route}) {
   // console.log(user);
   let id = user.id;
   let name = user.name;
-  let totalHours = 2400;
+  const [workTime_inWeek, setWeek] = useState(0);
+  const [startWeek, setStartWeek] = useState(0);
+  const [endWeek, setEndWeek] = useState(0);
   const baseURL = 'http://' + IPADDRESS + '/attcheck/';
   const [restTime, setRest] = useState(0);
   const [workTime, setWork] = useState(0);
@@ -134,6 +136,28 @@ export default function TimesheetScreen({navigation, route}) {
     return [work_normal, work_extra, rest_time, total_work_time];
   }
 
+  const calculateWeekTime = (date, work_per_day) => {
+    let total_in_week = 0
+    let normal_in_week = 0
+    let current_week = moment(new Date(date)).week();
+    let week_from = moment(new Date(date)).startOf("week").format("DD/MM")
+    let week_to = moment(new Date(date)).endOf("week").format("DD/MM")
+
+    let temp_weekData = [0, 0, 0, 0, 0, 0, 0];
+    for (const key in work_per_day){
+      if (work_per_day[key].check_out == null) 
+        continue;
+      if (moment(new Date(key)).week() == current_week){
+        let work_time_in_day = calculateWorkTime(work_per_day[key].check_in, work_per_day[key].check_out);
+        total_in_week += work_time_in_day[3];
+        normal_in_week += work_time_in_day[0]
+        temp_weekData[moment(new Date(key)).day()] = work_time_in_day[3];
+      }
+    }
+
+    return [total_in_week, week_from, week_to, normal_in_week, total_in_week - normal_in_week]
+  }
+
   const reset = (date, totalWorkInfo) => {
     let currentDayFormated = moment(date).format('YYYY-MM-DD');
     let workPerDay = {};
@@ -141,6 +165,12 @@ export default function TimesheetScreen({navigation, route}) {
       let day = totalWorkInfo[i].date;
       workPerDay[day] = totalWorkInfo[i];
     }
+
+    // Total work time in week
+    setWeek(calculateWeekTime(date, workPerDay)[0]);
+    setStartWeek(calculateWeekTime(date, workPerDay)[1]);
+    setEndWeek(calculateWeekTime(date, workPerDay)[2]);
+
     if (workPerDay.hasOwnProperty(currentDayFormated)){
       if (workPerDay[currentDayFormated].check_out !== null){
         setIsCheckoutNone(false);
@@ -195,37 +225,42 @@ export default function TimesheetScreen({navigation, route}) {
           {/* This is the first block of information */}
           <View style={{height: '100%'}}>
 
-            {/* <View style={styles.totalHours}>
-              <View style={{borderWidth: 0, justifyContent: 'center', width: '75%'}}>
-                <Text style={{fontSize: 16, borderWidth: 0, paddingLeft: 20, fontWeight: '600'}}>
-                  Tổng thời gian tuần này
-                </Text>
-              </View>
-              <View style={{borderWidth: 0, justifyContent: 'center', width: '25%', alignItems: 'center'}}> 
-                <Text style={{borderWidth: 0, color: '#8189B0', fontWeight: 'bold'}}>{totalHours}</Text>
-              </View>
-            </View> */}
+            
+          <View style={styles.totalHours}>
+            <View style={{borderWidth: 0, justifyContent: 'center', width: '75%'}}>
+              <Text style={{fontSize: 20, borderWidth: 0, fontWeight: 'bold'}}>
+                Tổng thời gian trong tuần 
+              </Text>
+              <Text style={{fontSize: 20, borderWidth: 0, fontWeight: 'bold'}}>
+                từ {startWeek} - {endWeek}
+              </Text>
+            </View>
+
+            <View style={{borderWidth: 0, justifyContent: 'center', width: '25%', alignItems: 'center'}}> 
+              {workTime_inWeek == 0 ? (<Text style={{fontSize: 25, borderWidth: 0, color: '#8189B0', fontWeight: 'bold'}}>--</Text>) : (<Text style={{fontSize: 25, borderWidth: 0, color: '#8189B0', fontWeight: 'bold'}}>{(workTime_inWeek/3600.0).toFixed(2)}h</Text>)}
+            </View>
+          </View>
 
             <View style={styles.workingWatch}>
               {/* Title */}
               <View style={{borderWidth: 0, height: 40, justifyContent: 'center', paddingLeft: 10}}>
-                <Text style={{fontSize: 20, fontWeight: 'bold'}}>Theo dõi thời gian</Text>
+                <Text style={{fontSize: 20, fontWeight: 'bold'}}>Theo dõi thời gian trong ngày</Text>
               </View>
 
               {/* Working supervisor */}
               <View style={{}}>
                 <View style={{height: 80, borderWidth: 0, flexDirection: 'row'}}>
                     <View style={{width: '50%', height: 80, borderWidth: 0, justifyContent: 'center', alignItems: 'center'}}>
-                      <Text style={{fontSize: 16, marginVertical: 2}}>First in</Text>
+                      <Text style={{fontSize: 16, marginVertical: 2}}>Check in</Text>
                       {
-                        isNone ? (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>--</Text>) : (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>{moment.unix(workInfo.check_in).format('h:mm:ss a')}</Text>)
+                        isNone ? (<Text style={{fontSize: 20, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>--</Text>) : (<Text style={{fontSize: 20, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>{moment.unix(workInfo.check_in).format('h:mm:ss a')}</Text>)
                       }
                       
                     </View>
                     <View style={{width: '50%', height: 80, borderWidth: 0, justifyContent: 'center', alignItems: 'center'}}>
-                      <Text style={{fontSize: 16, marginVertical: 2}}>Last out</Text>
+                      <Text style={{fontSize: 16, marginVertical: 2}}>Check out</Text>
                       {
-                        (isNone || isCheckoutNone) ? (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>--</Text>) : (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>{moment.unix(workInfo.check_out).format('h:mm:ss a')}</Text>)
+                        (isNone || isCheckoutNone) ? (<Text style={{fontSize: 20, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>--</Text>) : (<Text style={{fontSize: 20, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>{moment.unix(workInfo.check_out).format('h:mm:ss a')}</Text>)
                       }
                     </View>
                 </View>
@@ -233,13 +268,13 @@ export default function TimesheetScreen({navigation, route}) {
                     <View style={{width: '50%', height: 80, borderWidth: 0, justifyContent: 'center', alignItems: 'center'}}>
                       <Text style={{fontSize: 16, marginVertical: 2}}>Thời gian nghỉ</Text>
                       {
-                        (isNone || isCheckoutNone || restTime == 0) ? (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>--</Text>) : (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>{moment.utc(restTime*1000).format('HH:mm:ss')}</Text>)
+                        (isNone || isCheckoutNone || restTime == 0) ? (<Text style={{fontSize: 20, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>--</Text>) : (<Text style={{fontSize: 20, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>{moment.utc(restTime*1000).format('HH:mm:ss')}</Text>)
                       }
                     </View>
                     <View style={{width: '50%', height: 80, borderWidth: 0, justifyContent: 'center', alignItems: 'center'}}>
                       <Text style={{fontSize: 16, marginVertical: 2}}>Thời gian làm việc</Text>
                       {
-                        (isNone || isCheckoutNone || workTime == 0) ? (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>--</Text>) : (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>{moment.utc(workTime*1000).format('HH:mm:ss')}</Text>)
+                        (isNone || isCheckoutNone || workTime == 0) ? (<Text style={{fontSize: 20, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>--</Text>) : (<Text style={{fontSize: 20, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>{moment.utc(workTime*1000).format('HH:mm:ss')}</Text>)
                       }
                     </View>
                 </View>
@@ -251,23 +286,23 @@ export default function TimesheetScreen({navigation, route}) {
             <View style={styles.totalSalaryHours}>
               {/* Title */}
               <View style={{borderWidth: 0, height: 40, justifyContent: 'center', paddingLeft: 10}}>
-                <Text style={{fontSize: 20, fontWeight: 'bold'}}>Tổng thời gian trả lương</Text>
+                <Text style={{fontSize: 20, fontWeight: 'bold'}}>Tổng thời gian làm việc trong ngày</Text>
               </View>
 
               <View style={{flexDirection: 'row', height: 110, borderWidth: 0}}>
                   <View style={{width: '50%', borderWidth: 0, justifyContent: 'center', alignItems: 'center'}}>
                     <Text style={{fontSize: 16, marginVertical: 3}}>Giờ làm bình thường</Text>
                     {
-                      (isNone || isCheckoutNone || norWorHours == 0) ? (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>--</Text>) : (<Text style={{fontSize: 16, marginVertical: 3, color: '#8189B0', fontWeight: 'bold'}}>{moment.utc(norWorHours*1000).format('HH:mm:ss')}</Text>)
+                      (isNone || isCheckoutNone || norWorHours == 0) ? (<Text style={{fontSize: 20, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>--</Text>) : (<Text style={{fontSize: 20, marginVertical: 3, color: '#8189B0', fontWeight: 'bold'}}>{moment.utc(norWorHours*1000).format('HH:mm:ss')}</Text>)
                     }
                     
                   </View>
                   <View style={{width: '50%', borderWidth: 0, justifyContent: 'center', alignItems: 'center'}}>
                     <Text style={{fontSize: 16, marginVertical: 3}}>Giờ làm tăng ca</Text>
                     {
-                      (isNone || isCheckoutNone || extrWorkHours == 0) ? (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>--</Text>) : (
+                      (isNone || isCheckoutNone || extrWorkHours == 0) ? (<Text style={{fontSize: 20, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>--</Text>) : (
 
-                        <Text style={{fontSize: 16, marginVertical: 3, color: '#8189B0', fontWeight: 'bold'}}>{moment.utc(extrWorkHours*1000).format('HH:mm:ss')}</Text>
+                        <Text style={{fontSize: 20, marginVertical: 3, color: '#8189B0', fontWeight: 'bold'}}>{moment.utc(extrWorkHours*1000).format('HH:mm:ss')}</Text>
                       )
                     }
                   </View>
@@ -284,7 +319,7 @@ export default function TimesheetScreen({navigation, route}) {
 const styles = StyleSheet.create({
   container: { flex: 1, height: 100 },
   containerTemp: {width: '100%', height: '100%', padding: 0, margin: 0, borderColor: '#000', borderWidth: 0},
-  totalHours: {height: 50, borderWidth: 0, borderRadius: 10, marginHorizontal: 10, backgroundColor: '#f2f8ff', flexDirection: 'row',
+  totalHours: {paddingVertical: 10, paddingHorizontal: 10, borderWidth: 0, borderRadius: 10, marginHorizontal: 10, marginVertical: 10, backgroundColor: '#f2f8ff', flexDirection: 'row',
                 shadowColor: "#000",
                 shadowOffset: {
                   width: 0,
@@ -294,7 +329,7 @@ const styles = StyleSheet.create({
                 shadowRadius: 4.65,
                 
                 elevation: 6,},
-  workingWatch: {height: 200, borderWidth: 0, marginHorizontal: 10, backgroundColor: '#f2f8ff', marginVertical: 15, borderRadius: 20,
+  workingWatch: {height: 200, borderWidth: 0, marginHorizontal: 10, backgroundColor: '#f2f8ff', marginVertical: 10, borderRadius: 20,
                 shadowColor: "#000",
                 shadowOffset: {
                   width: 0,
@@ -304,7 +339,7 @@ const styles = StyleSheet.create({
                 shadowRadius: 4.65,
                 
                 elevation: 6,},
-  totalSalaryHours: {height: 150, borderWidth: 0, marginHorizontal: 10, backgroundColor: '#f2f8ff', marginVertical: 15, borderRadius: 20,
+  totalSalaryHours: {height: 150, borderWidth: 0, marginHorizontal: 10, backgroundColor: '#f2f8ff', marginVertical: 10, borderRadius: 20,
                 shadowColor: "#000",
                 shadowOffset: {
                   width: 0,
@@ -313,6 +348,21 @@ const styles = StyleSheet.create({
                 shadowOpacity: 0.27,
                 shadowRadius: 4.65,
                 
-                elevation: 6,}
+                elevation: 6,},
+  totalWeek: {
+    backgroundColor: '#f2f8ff',
+    borderRadius: 20,
+    marginHorizontal: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
+    
+    elevation: 6,
+    marginBottom: 20,
+  },  
 
 });
