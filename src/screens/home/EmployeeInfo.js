@@ -265,6 +265,31 @@ export default function EmployeeInfo({ navigation, route }) {
           { loading ? (<Text style={styles.loadingText}>Đang tải thông tin nhân viên ... </Text>) : (
           <ScrollView style={{height: '100%'}}>
 
+
+            {/* Total Salary Hours */}
+            <View style={styles.totalSalaryHours}>
+              {/* Title */}
+              <View style={{borderWidth: 0, height: 40, justifyContent: 'center', paddingLeft: 10}}>
+                <Text style={{fontSize: 20, fontWeight: 'bold'}}>Tổng thời gian trả lương trong ngày</Text>
+              </View>
+
+              <View style={{flexDirection: 'row', height: 90, borderWidth: 0}}>
+                  <View style={{width: '50%', borderWidth: 0, justifyContent: 'center', alignItems: 'center'}}>
+                    <Text style={{fontSize: 16, marginVertical: 3}}>Giờ làm bình thường</Text>
+                    {
+                      (isCheckoutNone || isNone || norWorHours == 0) ? (<Text style={{fontSize: 20, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>--</Text>) : (<Text style={{fontSize: 20, marginVertical: 3, color: '#8189B0', fontWeight: 'bold'}}>{moment.utc(norWorHours*1000).format('HH:mm:ss')}</Text>)
+                    }
+                  </View>
+                  <View style={{width: '50%', borderWidth: 0, justifyContent: 'center', alignItems: 'center'}}>
+                    <Text style={{fontSize: 16, marginVertical: 3}}>Giờ làm tăng ca</Text>
+                    {
+                      (isCheckoutNone || isNone || extrWorkHours == 0) ? (<Text style={{fontSize: 20, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>--</Text>) : (<Text style={{fontSize: 20, marginVertical: 3, color: '#8189B0', fontWeight: 'bold'}}>{moment.utc(extrWorkHours*1000).format('HH:mm:ss')}</Text>)
+                    }
+                  </View>
+              </View>
+            </View>
+
+            
             <View style={styles.totalWeek}>
               <View style={styles.totalHours}>
                 <View style={{borderWidth: 0, justifyContent: 'center', width: '75%'}}>
@@ -276,7 +301,7 @@ export default function EmployeeInfo({ navigation, route }) {
                   </Text>
                 </View>
                 <View style={{borderWidth: 0, justifyContent: 'center', width: '25%', alignItems: 'center'}}> 
-                  {workTime_inWeek == 0 ? (<Text style={{fontSize: 17, borderWidth: 0, color: '#8189B0', fontWeight: 'bold'}}>--</Text>) : (<Text style={{fontSize: 17, borderWidth: 0, color: '#8189B0', fontWeight: 'bold'}}>{(workTime_inWeek/3600.0).toFixed(2)}h</Text>)}
+                  {workTime_inWeek == 0 ? (<Text style={{fontSize: 25, borderWidth: 0, color: '#8189B0', fontWeight: 'bold'}}>--</Text>) : (<Text style={{fontSize: 25, borderWidth: 0, color: '#8189B0', fontWeight: 'bold'}}>{(workTime_inWeek/3600.0).toFixed(2)}h</Text>)}
                 </View>
               </View>
                 
@@ -284,59 +309,38 @@ export default function EmployeeInfo({ navigation, route }) {
                   <View style={{width: '50%', borderWidth: 0, justifyContent: 'center', alignItems: 'center'}}>
                     <Text style={{fontSize: 16, marginVertical: 3}}>Giờ làm bình thường</Text>
                     {
-                      (norWorHoursWeek == 0) ? (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>--</Text>) : (<Text style={{fontSize: 16, marginVertical: 3, color: '#8189B0', fontWeight: 'bold'}}>{(norWorHoursWeek/3600.0).toFixed(2)}h</Text>)
+                      (norWorHoursWeek == 0) ? (<Text style={{fontSize: 20, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>--</Text>) : (<Text style={{fontSize: 20, marginVertical: 3, color: '#8189B0', fontWeight: 'bold'}}>{(norWorHoursWeek/3600.0).toFixed(2)}h</Text>)
                     }
                   </View>
                   <View style={{width: '50%', borderWidth: 0, justifyContent: 'center', alignItems: 'center'}}>
                     <Text style={{fontSize: 16, marginVertical: 3}}>Giờ làm tăng ca</Text>
                     {
-                      (extrWorHoursWeek == 0) ? (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>--</Text>) : (<Text style={{fontSize: 16, marginVertical: 3, color: '#8189B0', fontWeight: 'bold'}}>{(extrWorHoursWeek/3600.0).toFixed(2)}h</Text>)
+                      (extrWorHoursWeek == 0) ? (<Text style={{fontSize: 20, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>--</Text>) : (<Text style={{fontSize: 20, marginVertical: 3, color: '#8189B0', fontWeight: 'bold'}}>{(extrWorHoursWeek/3600.0).toFixed(2)}h</Text>)
                     }
                   </View>
               </View>
-            </View>
 
-            {/* Total Salary Hours */}
-            <View style={styles.totalSalaryHours}>
-              {/* Title */}
-              <View style={{borderWidth: 0, height: 40, justifyContent: 'center', paddingLeft: 10}}>
-                <Text style={{fontSize: 20, fontWeight: 'bold'}}>Tổng thời gian trả lương trong ngày</Text>
-              </View>
-
-              <View style={{flexDirection: 'row', height: 110, borderWidth: 0}}>
-                  <View style={{width: '50%', borderWidth: 0, justifyContent: 'center', alignItems: 'center'}}>
-                    <Text style={{fontSize: 16, marginVertical: 3}}>Giờ làm bình thường</Text>
-                    {
-                      (isCheckoutNone || isNone || norWorHours == 0) ? (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>--</Text>) : (<Text style={{fontSize: 16, marginVertical: 3, color: '#8189B0', fontWeight: 'bold'}}>{moment.utc(norWorHours*1000).format('HH:mm:ss')}</Text>)
-                    }
-                  </View>
-                  <View style={{width: '50%', borderWidth: 0, justifyContent: 'center', alignItems: 'center'}}>
-                    <Text style={{fontSize: 16, marginVertical: 3}}>Giờ làm tăng ca</Text>
-                    {
-                      (isCheckoutNone || isNone || extrWorkHours == 0) ? (<Text style={{fontSize: 16, marginVertical: 2, color: '#8189B0', fontWeight: 'bold'}}>--</Text>) : (<Text style={{fontSize: 16, marginVertical: 3, color: '#8189B0', fontWeight: 'bold'}}>{moment.utc(extrWorkHours*1000).format('HH:mm:ss')}</Text>)
-                    }
-                  </View>
+              
+              <View style={styles.chartContainer}>
+                <LineChart
+                  data={data}
+                  width={Dimensions.get("window").width*0.9}
+                  height={220}
+                  chartConfig={{
+                    backgroundColor: "#ffffff",
+                    backgroundGradientFrom: "#ffff",
+                    backgroundGradientTo: "#ffff",
+                    decimalPlaces: 0,
+                    color: (opacity = 1) => `rgba(51, 51, 51, ${opacity})`,
+                    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                  }}
+                  bezier
+                  formatYLabel={(y_value) => (y_value/3600.0).toFixed(2)}
+                  style={styles.chart}
+                />
               </View>
             </View>
 
-            <View style={styles.chartContainer}>
-              <LineChart
-                data={data}
-                width={Dimensions.get("window").width * 0.9}
-                height={220}
-                chartConfig={{
-                  backgroundColor: "#ffffff",
-                  backgroundGradientFrom: "#ffffff",
-                  backgroundGradientTo: "#ffffff",
-                  decimalPlaces: 0,
-                  color: (opacity = 1) => `rgba(77, 169, 255, ${opacity})`,
-                  labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                }}
-                bezier
-                formatYLabel={(y_value) => (y_value/3600.0).toFixed(2)}
-                style={styles.chart}
-              />
-            </View>
           </ScrollView>)}
         </View>
       </View>
@@ -358,7 +362,7 @@ const styles = StyleSheet.create({
                 shadowRadius: 4.65,
                 
                 elevation: 6,},
-  totalSalaryHours: {height: 150, borderWidth: 0, marginHorizontal: 10, backgroundColor: '#f2f8ff', marginVertical: 15, borderRadius: 20,
+  totalSalaryHours: {borderWidth: 0, marginHorizontal: 10, backgroundColor: '#f2f8ff', marginVertical: 15, borderRadius: 20,
                 shadowColor: "#000",
                 shadowOffset: {
                   width: 0,
@@ -375,18 +379,13 @@ const styles = StyleSheet.create({
   chartContainer: {
     alignItems: "center",
     justifyContent: "center",
+    borderWidth: 0,
   },
   chart: {
-    width: "90%",
     borderRadius: 15,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.32,
-    shadowRadius: 5.46,
-    elevation: 9,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: '#afafaf'
   },
   totalWeek: {
     backgroundColor: '#f2f8ff',
@@ -401,5 +400,6 @@ const styles = StyleSheet.create({
     shadowRadius: 4.65,
     
     elevation: 6,
+    marginBottom: 20,
   },  
 });

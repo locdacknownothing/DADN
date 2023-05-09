@@ -171,7 +171,7 @@ export default function ManageDevice({ navigation, route }) {
     myFunc();
     const intervalFetch = setInterval(() => {
       myFunc();
-    }, 500);
+    }, 2000);
 
     return () => clearInterval(intervalFetch);
   }, [])

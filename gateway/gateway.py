@@ -33,7 +33,7 @@ def disconnected(client):
     sys.exit(1)
     
 def message(client, feed_id, payload):
-    print("Nhận dữ liệu" + feed_id + ": " + payload)
+    print("Nhận dữ liệu " + feed_id + ": " + payload)
     if feed_id == "pasic-smart-office.offices-light":
         if payload == "1":
             writeData("A")
