@@ -13,7 +13,7 @@ def getPort():
             splitPort = strPort.split(" ")
             commPort = (splitPort[0])
     
-    # return commPort
+    return commPort
     return "COM11"
     
 if getPort() != "None":
@@ -86,3 +86,26 @@ def readSerial(client):
 
 def writeData(data):
     ser.write(str(data).encode())
+    
+def sendSerial(feed_id, payload):
+    if feed_id == "pasic-smart-office.offices-light":
+        if payload == "1":
+            writeData("A")
+        elif payload == "0":
+            writeData("B")
+    elif feed_id == "pasic-smart-office.hallways-light":
+        if payload == "1":
+            writeData("C")
+        elif payload == "0":
+            writeData("D")
+    elif feed_id == "pasic-smart-office.fan":
+        if payload == "0":
+            writeData("0")
+        elif payload == "25":
+            writeData("1")
+        elif payload == "50":
+            writeData("2")
+        elif payload == "75":
+            writeData("3")
+        elif payload == "100":
+            writeData("4")
