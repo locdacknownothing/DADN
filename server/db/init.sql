@@ -33,7 +33,10 @@ VALUES
     (1, "Huỳnh Đại Vinh", "face_db/vinh.jpg", 0),
     (2, "Lalisa Manoban", "face_db/lisa.jpg", 0),
     (3, "Trấn Thành", "face_db/tran_thanh.jpg", 0),
-    (4, "Nguyễn Quang Khánh", "face_db/nemesis.jpg", 0);
+    (4, "Nguyễn Quang Khánh", "face_db/nemesis.jpg", 0),
+    (5, "Trương Nguyễn Khôi Nguyên", "face_db/nguyen.jpg", 1),
+    (6, "Tạ Lê Đắc Lộc", "face_db/dloc.jpg", 1),
+    (7, "Nguyễn Kim Ngọc Vy", "face_db/vy.jpg", 1);
 
 INSERT INTO account
 VALUES
@@ -41,7 +44,10 @@ VALUES
     (1, "vinh@pasic.com", "notadmin"),
     (2, "lisa@pasic.com", "notadmin"),
     (3, "thanh@pasic.com", "notadmin"),
-    (4, "khanh@pasic.com", "notadmin");
+    (4, "khanh@pasic.com", "notadmin"),
+    (5, "nguyen@pasic.com", "admin"),
+    (6, "dloc@pasic.com", "admin"),
+    (7, "vy@pasic.com", "admin");
 
 INSERT INTO timesheet
 VALUES
