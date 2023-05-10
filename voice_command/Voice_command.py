@@ -14,7 +14,6 @@ hallways_light_url = "pasic-smart-office.hallways-light"
 fan_url = "pasic-smart-office.fan"
 
 def sendData2Ada(deviceID, value):
-    print("Ok")
     if deviceID == "D1":
         aio.send_data(office_light_url, value == "ON" and 1 or 0)
     elif deviceID == "D2":
