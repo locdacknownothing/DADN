@@ -1,5 +1,6 @@
 import dlib
 
+SERVER_URL = '172.20.10.4'
 MODEL_PATH = 'model'
 FACE_LANDMARK_MODEL = f'{MODEL_PATH}/shape_predictor_5_face_landmarks.dat'
 FACE_REC_MODEL = f'{MODEL_PATH}/dlib_face_recognition_resnet_model_v1.dat'

@@ -32,6 +32,8 @@ while cap.isOpened():
             LIGHT_OFF = False
             NO_PPL_MARK = datetime.now().timestamp()
         else:
+            if cv2.waitKey(30) & 0xff == 27:
+                break
             continue
         print(light.value)
 

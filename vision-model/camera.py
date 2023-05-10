@@ -1,11 +1,11 @@
 import numpy as np
 import cv2
 import dlib
-from config import facerec, detector, sp
+from config import facerec, detector, sp, SERVER_URL
 import requests
 from timesheet import check
 
-encoded_faces = np.array(requests.get(url="http://127.0.0.1:5000/encode/").json())
+encoded_faces = np.array(requests.get(url=f"http://{SERVER_URL}:5000/encode/").json())
 
 def convert_and_trim_bb(image, rect):
     # extract the starting and ending (x, y)-coordinates of the
