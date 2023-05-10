@@ -2,14 +2,12 @@ print("Hello Adafruit!!!")
 import sys
 import random
 import time
-# import serial.tools.list_ports
+import serial.tools.list_ports
 from Adafruit_IO import MQTTClient, Client
 from uart import *
 import cv2
 
-with open("../assets/ada_key.txt", "r") as f:
-    MY_KEY = f.read()
-    f.close() 
+MY_KEY = "aio_bFuC23jDvDASKpSRok0gXmfk7kDj"
 AIO_FEED_ID = ["pasic-smart-office.offices-light", "pasic-smart-office.hallways-light", "pasic-smart-office.fan"]
 AIO_USERNAME = "Vyvy0812"
 
@@ -42,36 +40,18 @@ client.connect()
 client.loop_background()
 
 aio = Client(AIO_USERNAME, MY_KEY)
-for feed_id in AIO_FEED_ID:
-    data = aio.receive(feed_id)
-    if feed_id == "pasic-smart-office.offices-light":
-        if data.value == "1":
-            writeData("A")
-        elif data.value == "0":
-            writeData("B")
-    elif feed_id == "pasic-smart-office.hallways-light":
-        if data.value == "1":
-            writeData("C")
-        elif data.value == "0":
-            writeData("D")
-    elif feed_id == "pasic-smart-office.fan":
-        if data.value == "0":
-            writeData("0")
-        elif data.value == "25":
-            writeData("1")
-        elif data.value == "50":
-            writeData("2")
-        elif data.value == "75":
-            writeData("3")
-        elif data.value == "100":
-            writeData("4")
 
-
-counter = 5
-type_data = 0
-
+first = 1
 while True:
-    
+    if first == 1:
+        sendSerialInitial(AIO_FEED_ID, aio)
+        first = 0
+    else:
+        readSerial(client)
+
+    time.sleep(1)
+
+
     # if counter <= 0:
     #     counter = 5
     #     # message_id = int(time.time())
@@ -100,9 +80,10 @@ while True:
         
             
     # counter = counter - 1
-    readSerial(client)
-    
-    time.sleep(1)
+
+counter = 5
+type_data = 0
+
 
 # while True:
 #     try:

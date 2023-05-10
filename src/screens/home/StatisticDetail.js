@@ -92,12 +92,14 @@ export default function StatisticDetail({ navigation, route }) {
     let labels = []
     for (let i = 0; i < value_param.length; i++) {
       // if (i % 10 === 0 || i === 99) {
-      if (i % 3 === 0 || i === value_param.length - 1) {
+      // if (i % 3 === 0 || i === value_param.length - 1) {
         stats.push(value_param[i]);
-      }
-      if (i % 9 === 0 || i === 99) {
+      // }
+      if (i % 10 === 0) {
         labels.push(i);
       }
+      else
+        labels.push("")
     }
     return [stats, labels]
   }
@@ -155,7 +157,8 @@ export default function StatisticDetail({ navigation, route }) {
       <View style={styles.chartContainer}>
         <LineChart
           data={data}
-          width={Dimensions.get("window").width * 0.9}
+          withDots={false}
+          width={Dimensions.get("window").width*0.9}
           height={220}
           chartConfig={{
             backgroundColor: "#ffffff",
@@ -254,10 +257,6 @@ const styles = StyleSheet.create({
   chartContainer: {
     alignItems: "center",
     justifyContent: "center",
-  },
-  chart: {
-    width: "90%",
-    borderRadius: 15,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -266,6 +265,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.32,
     shadowRadius: 5.46,
     elevation: 9,
+    // paddingHorizontal: 10,
+    // borderWidth: 1,
+  },
+  chart: {
+    // width: "100%",
+    // paddingHorizontal: 10,
+    borderRadius: 15,
+    // borderWidth: 1,
   },
   horizontalLine: {
     borderBottomColor: "#ccc",
